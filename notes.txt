@@ -1,0 +1,4 @@
+newscatcherapi.com for news about cities/towns
+RapidAPI for Zillow
+Google Maps API for map embed
+Google Places API for schools/resturants/shops
