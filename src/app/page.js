@@ -32,6 +32,7 @@ export default function LandingPage() {
 
     getFeatured();
   },[]);
+
   console.log(featured);
 
   const mainLineAreas = [

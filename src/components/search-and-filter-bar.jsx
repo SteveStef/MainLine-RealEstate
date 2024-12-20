@@ -24,40 +24,15 @@ import {
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@/components/ui/label'
 
-export function SearchAndFilterBar() {
+export function SearchAndFilterBar({filters, setFilters, requestToggle, setRequestToggle }) {
   const router = useRouter()
-  const [filters, setFilters] = useState({
-    location: '',
-    status: 'forSale',
-    sortSelection: 'days',
-    priceMin: 0,
-    priceMax: 1000000,
-    bedsMin: 0,
-    bathsMin: 0,
-    sqftMin: 0,
-    sqftMax: 5000,
-    yearBuiltMin: 1900,
-    yearBuiltMax: new Date().getFullYear(),
-    propertyType: [],
-    hasPool: false,
-    hasGarage: false,
-    isNewConstruction: false,
-  })
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }))
   }
 
   const handleSearch = () => {
-    const searchParams = new URLSearchParams()
-    Object.entries(filters).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((v) => searchParams.append(key, v))
-      } else if (value !== '' && value !== false) {
-        searchParams.append(key, value.toString())
-      }
-    })
-    router.push(`/houses?${searchParams.toString()}`)
+    setRequestToggle(!requestToggle);
   }
 
   return (
