@@ -25,7 +25,7 @@ export function ImageSlideshow() {
   }, [])
 
   return (
-    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[600px] overflow-hidden">
+    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[650px] overflow-hidden">
       <AnimatePresence initial={false}>
         <motion.div
           key={currentIndex}
