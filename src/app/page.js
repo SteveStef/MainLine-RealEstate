@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Search, Newspaper, Phone, MapPin, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Square, CarFront, TreesIcon as Tree } from 'lucide-react';
+import { Search, Newspaper, Phone, MapPin, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Square, CarFront, TreesIcon as Tree, Info } from 'lucide-react';
 import { motion, AnimatePresence } from "framer-motion";
 import { ImageSlideshow } from "../components/ImageSlideShow";
 import Background from "../realestate.jpg";
@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function LandingPage() {
   const [featured, setFeatured] = useState([]);
@@ -238,23 +239,14 @@ function ExploreAreas({ mainLineAreas }) {
   return (
     <section id="areas" className="w-full py-12 px-4 md:px-6 bg-gray-50">
       <div className="container px-4 md:px-6 mx-auto">
-        <motion.h2 
-          className="text-3xl font-bold tracking-tighter sm:text-4xl text-center mb-8"
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-center mb-8">
           Explore Main Line Areas
-        </motion.h2>
+        </h2>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {mainLineAreas.map((area, index) => (
-            <motion.div
+          {mainLineAreas.map((area) => (
+            <div
               key={area.name}
-              className="relative overflow-hidden rounded-lg shadow-md group"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              whileHover={{ scale: 1.03 }}
+              className="relative overflow-hidden rounded-lg shadow-md group transition-transform duration-300 hover:scale-103"
             >
               <Image
                 src={area.image}
@@ -270,7 +262,7 @@ function ExploreAreas({ mainLineAreas }) {
                   Learn More
                 </Button>
               </div>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
@@ -280,102 +272,146 @@ function ExploreAreas({ mainLineAreas }) {
 
 function SearchSection() {
   return (
-    <section id="search" className="w-full py-12 md:py-16 px-4 md:px-6 bg-white">
-      <div className="container px-4 md:px-6 mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+    <section id="search" className="w-full py-16 md:py-24 px-4 md:px-6 bg-gradient-to-b from-white to-gray-100">
+      <div className="container mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
           <motion.div
+            className="lg:col-span-1"
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl mb-4">
-              Find Your Perfect Home
+            <h2 className="text-4xl font-bold tracking-tight mb-6 text-primary">
+              Find Your Dream Home
             </h2>
-            <p className="text-gray-600 mb-6">
-              Use our advanced search to find the perfect property that meets all your requirements.
+            <p className="text-gray-600 mb-8 text-lg leading-relaxed">
+              Use our advanced search to discover the perfect property that aligns with your lifestyle and preferences. Whether you're looking for a cozy apartment or a spacious family home, we've got you covered.
             </p>
+            <Card className="bg-primary/5 border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center text-primary">
+                  <Info className="h-5 w-5 mr-2" />
+                  Search Tips
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="list-disc list-inside space-y-2 text-sm text-gray-600">
+                  <li>Use specific locations for more accurate results</li>
+                  <li>Adjust price range to fit your budget</li>
+                  <li>Consider nearby amenities in your search</li>
+                  <li>Don't forget to check our featured properties</li>
+                </ul>
+              </CardContent>
+            </Card>
           </motion.div>
           <motion.form 
-            className="space-y-4 bg-gray-50 p-6 rounded-lg shadow-md"
+            className="lg:col-span-2 space-y-6 bg-white p-8 rounded-xl shadow-lg border border-gray-200"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Input placeholder="Location (e.g., Bryn Mawr, Ardmore)" type="text" className="w-full" />
-            <div className="flex space-x-4">
-              <Input placeholder="Min Price" type="number" className="w-1/2" />
-              <Input placeholder="Max Price" type="number" className="w-1/2" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Location</label>
+                <Input placeholder="e.g., Bryn Mawr, Ardmore" type="text" className="w-full" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Property Type</label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="house">House</SelectItem>
+                    <SelectItem value="apartment">Apartment</SelectItem>
+                    <SelectItem value="condo">Condo</SelectItem>
+                    <SelectItem value="townhouse">Townhouse</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <div className="flex space-x-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Price Range</label>
+                <div className="flex space-x-4">
+                  <Input placeholder="Min" type="number" className="w-1/2" />
+                  <Input placeholder="Max" type="number" className="w-1/2" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Bedrooms</label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4, 5].map(num => (
+                      <SelectItem key={num} value={num.toString()}>{num}+</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-700">Bathrooms</label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {[1, 2, 3, 4].map(num => (
+                      <SelectItem key={num} value={num.toString()}>{num}+</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Square Footage</label>
+              <Slider defaultValue={[1000]} max={5000} step={100} className="py-4" />
+              <div className="flex justify-between text-xs text-gray-500">
+                <span>0 sq ft</span>
+                <span>5000+ sq ft</span>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-gray-700">Year Built</label>
               <Select>
-                <SelectTrigger className="w-1/2">
-                  <SelectValue placeholder="Bedrooms" />
+                <SelectTrigger>
+                  <SelectValue placeholder="Select year" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">1+</SelectItem>
-                  <SelectItem value="2">2+</SelectItem>
-                  <SelectItem value="3">3+</SelectItem>
-                  <SelectItem value="4">4+</SelectItem>
-                  <SelectItem value="5">5+</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select>
-                <SelectTrigger className="w-1/2">
-                  <SelectValue placeholder="Bathrooms" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1">1+</SelectItem>
-                  <SelectItem value="2">2+</SelectItem>
-                  <SelectItem value="3">3+</SelectItem>
-                  <SelectItem value="4">4+</SelectItem>
+                  {['2020+', '2010+', '2000+', '1990+', '1980+'].map(year => (
+                    <SelectItem key={year} value={year}>{year}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium">Square Footage</label>
-              <Slider defaultValue={[1000]} max={5000} step={100} />
+              <label className="text-sm font-medium text-gray-700">Amenities</label>
+              <div className="flex flex-wrap gap-2">
+                <TooltipProvider>
+                  {[
+                    { icon: CarFront, label: 'Garage' },
+                    { icon: Tree, label: 'Garden' },
+                    { icon: Square, label: 'Pool' },
+                  ].map(({ icon: Icon, label }) => (
+                    <Tooltip key={label}>
+                      <TooltipTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Icon className="h-4 w-4 mr-2" />
+                          {label}
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Filter for properties with a {label.toLowerCase()}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  ))}
+                </TooltipProvider>
+              </div>
             </div>
-            <div className="flex space-x-4">
-              <Select>
-                <SelectTrigger className="w-1/2">
-                  <SelectValue placeholder="Property Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="house">House</SelectItem>
-                  <SelectItem value="apartment">Apartment</SelectItem>
-                  <SelectItem value="condo">Condo</SelectItem>
-                  <SelectItem value="townhouse">Townhouse</SelectItem>
-                </SelectContent>
-              </Select>
-              <Select>
-                <SelectTrigger className="w-1/2">
-                  <SelectValue placeholder="Year Built" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2020">2020+</SelectItem>
-                  <SelectItem value="2010">2010+</SelectItem>
-                  <SelectItem value="2000">2000+</SelectItem>
-                  <SelectItem value="1990">1990+</SelectItem>
-                  <SelectItem value="1980">1980+</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button variant="outline" size="sm">
-                <CarFront className="h-4 w-4 mr-2" />
-                Garage
-              </Button>
-              <Button variant="outline" size="sm">
-                <Tree className="h-4 w-4 mr-2" />
-                Garden
-              </Button>
-              <Button variant="outline" size="sm">
-                <Square className="h-4 w-4 mr-2" />
-                Pool
-              </Button>
-            </div>
-            <Button className="w-full bg-primary text-white hover:bg-primary/90" type="submit">
-              <Search className="h-4 w-4 mr-2" />
+            <Button className="w-full bg-primary text-white hover:bg-primary/90 text-lg py-6" type="submit">
+              <Search className="h-5 w-5 mr-2" />
               Search Properties
             </Button>
           </motion.form>
@@ -536,4 +572,3 @@ function ContactSection() {
     </section>
   )
 }
-
