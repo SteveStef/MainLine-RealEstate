@@ -1,16 +1,13 @@
 'use client';
-
-import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Search, Newspaper, Phone, MapPin, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Square, CarFront, TreesIcon as Tree, Info } from 'lucide-react';
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { ImageSlideshow } from "../components/ImageSlideShow";
 import Background from "../realestate.jpg";
 import Image from "next/image";
 import YouTube from "react-youtube";
-import { Separator } from "@/components/ui/separator";
 import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
@@ -92,9 +89,9 @@ export default function LandingPage() {
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-900">
       <main className="flex-1">
         <HeroSection />
-        <FeaturedProperties />
         <WhyChooseUs />
         <ExploreAreas mainLineAreas={mainLineAreas} />
+        <FeaturedProperties />
         <SearchSection />
         <InsightsAndMedia insightsAndMedia={insightsAndMedia} />
         <ContactSection />
