@@ -1,17 +1,15 @@
-
 'use client';
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/ui/select';
 import {
   Sheet,
   SheetContent,
@@ -19,21 +17,20 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from '@/components/ui/sheet'
-//import { Slider } from '@/components/ui/slider'
-import { Switch } from '@/components/ui/switch'
-import { Label } from '@/components/ui/label'
+} from '@/components/ui/sheet';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
-export function SearchAndFilterBar({filters, setFilters, requestToggle, setRequestToggle }) {
-  const router = useRouter()
+export function SearchAndFilterBar({ filters, setFilters, requestToggle, setRequestToggle }) {
+  const router = useRouter();
 
   const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }))
-  }
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
 
   const handleSearch = () => {
     setRequestToggle(!requestToggle);
-  }
+  };
 
   return (
     <div className="space-y-4">
@@ -60,22 +57,6 @@ export function SearchAndFilterBar({filters, setFilters, requestToggle, setReque
             <SelectItem value="recentlySold">Recently Sold</SelectItem>
           </SelectContent>
         </Select>
-        <Select
-          value={filters.sortSelection}
-          onValueChange={(value) => handleFilterChange('sortSelection', value)}
-        >
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Sort By" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="days">Newest</SelectItem>
-            <SelectItem value="priced">Price (High to Low)</SelectItem>
-            <SelectItem value="pricea">Price (Low to High)</SelectItem>
-            <SelectItem value="beds">Bedrooms</SelectItem>
-            <SelectItem value="baths">Bathrooms</SelectItem>
-            <SelectItem value="size">Square Feet</SelectItem>
-          </SelectContent>
-        </Select>
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline">More Filters</Button>
@@ -94,23 +75,23 @@ export function SearchAndFilterBar({filters, setFilters, requestToggle, setReque
                   <Input
                     type="number"
                     placeholder="Min"
-                    value={filters.priceMin}
-                    onChange={(e) => handleFilterChange('priceMin', e.target.value)}
+                    value={filters.price_min}
+                    onChange={(e) => handleFilterChange('price_min', e.target.value)}
                   />
                   <span>to</span>
                   <Input
                     type="number"
                     placeholder="Max"
-                    value={filters.priceMax}
-                    onChange={(e) => handleFilterChange('priceMax', e.target.value)}
+                    value={filters.price_max}
+                    onChange={(e) => handleFilterChange('price_max', e.target.value)}
                   />
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label>Bedrooms</Label>
                 <Select
-                  value={filters.bedsMin.toString()}
-                  onValueChange={(value) => handleFilterChange('bedsMin', parseInt(value))}
+                  value={filters.beds_min?.toString() || "0"}
+                  onValueChange={(value) => handleFilterChange('beds_min', parseInt(value))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Any" />
@@ -128,8 +109,8 @@ export function SearchAndFilterBar({filters, setFilters, requestToggle, setReque
               <div className="grid gap-2">
                 <Label>Bathrooms</Label>
                 <Select
-                  value={filters.bathsMin.toString()}
-                  onValueChange={(value) => handleFilterChange('bathsMin', parseInt(value))}
+                  value={filters.baths_min?.toString() || "0"}
+                  onValueChange={(value) => handleFilterChange('baths_min', parseInt(value))}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Any" />
@@ -149,51 +130,35 @@ export function SearchAndFilterBar({filters, setFilters, requestToggle, setReque
                   <Input
                     type="number"
                     placeholder="Min"
-                    value={filters.sqftMin}
-                    onChange={(e) => handleFilterChange('sqftMin', e.target.value)}
+                    value={filters.sqft_min}
+                    onChange={(e) => handleFilterChange('sqft_min', e.target.value)}
                   />
                   <span>to</span>
                   <Input
                     type="number"
                     placeholder="Max"
-                    value={filters.sqftMax}
-                    onChange={(e) => handleFilterChange('sqftMax', e.target.value)}
-                  />
-                </div>
-              </div>
-              <div className="grid gap-2">
-                <Label>Year Built</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    placeholder="Min"
-                    value={filters.yearBuiltMin}
-                    onChange={(e) => handleFilterChange('yearBuiltMin', e.target.value)}
-                  />
-                  <span>to</span>
-                  <Input
-                    type="number"
-                    placeholder="Max"
-                    value={filters.yearBuiltMax}
-                    onChange={(e) => handleFilterChange('yearBuiltMax', e.target.value)}
+                    value={filters.sqft_max}
+                    onChange={(e) => handleFilterChange('sqft_max', e.target.value)}
                   />
                 </div>
               </div>
               <div className="grid gap-2">
                 <Label>Property Type</Label>
                 <div className="flex flex-wrap gap-2">
-                  {['Single Family', 'Condo', 'Townhouse', 'Multi-Family', 'Land'].map((type) => (
+                  {[
+                    { key: 'isSingleFamily', label: 'Single Family' },
+                    { key: 'isMultiFamily', label: 'Multi-Family' },
+                    { key: 'isApartment', label: 'Apartment' },
+                    { key: 'isCondo', label: 'Condo' },
+                    { key: 'isTownhouse', label: 'Townhouse' },
+                    { key: 'isLotLand', label: 'Lot/Land' },
+                  ].map(({ key, label }) => (
                     <Button
-                      key={type}
-                      variant={filters.propertyType.includes(type) ? 'default' : 'outline'}
-                      onClick={() => {
-                        const newTypes = filters.propertyType.includes(type)
-                          ? filters.propertyType.filter((t) => t !== type)
-                          : [...filters.propertyType, type]
-                        handleFilterChange('propertyType', newTypes)
-                      }}
+                      key={key}
+                      variant={filters[key] ? 'default' : 'outline'}
+                      onClick={() => handleFilterChange(key, !filters[key])}
                     >
-                      {type}
+                      {label}
                     </Button>
                   ))}
                 </div>
@@ -201,7 +166,7 @@ export function SearchAndFilterBar({filters, setFilters, requestToggle, setReque
               <div className="flex items-center gap-2">
                 <Switch
                   id="hasPool"
-                  checked={filters.hasPool}
+                  checked={filters.hasPool || false}
                   onCheckedChange={(checked) => handleFilterChange('hasPool', checked)}
                 />
                 <Label htmlFor="hasPool">Has Pool</Label>
@@ -209,18 +174,28 @@ export function SearchAndFilterBar({filters, setFilters, requestToggle, setReque
               <div className="flex items-center gap-2">
                 <Switch
                   id="hasGarage"
-                  checked={filters.hasGarage}
+                  checked={filters.hasGarage || false}
                   onCheckedChange={(checked) => handleFilterChange('hasGarage', checked)}
                 />
                 <Label htmlFor="hasGarage">Has Garage</Label>
               </div>
-              <div className="flex items-center gap-2">
-                <Switch
-                  id="isNewConstruction"
-                  checked={filters.isNewConstruction}
-                  onCheckedChange={(checked) => handleFilterChange('isNewConstruction', checked)}
-                />
-                <Label htmlFor="isNewConstruction">New Construction</Label>
+              <div className="grid gap-2">
+                <Label>Days on Market</Label>
+                <Select
+                  value={filters.daysOnMarket}
+                  onValueChange={(value) => handleFilterChange('daysOnMarket', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Any" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="any">Any</SelectItem>
+                    <SelectItem value="1">1 Day</SelectItem>
+                    <SelectItem value="7">7 Days</SelectItem>
+                    <SelectItem value="30">30 Days</SelectItem>
+                    <SelectItem value="90">90 Days</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <Button onClick={handleSearch}>Apply Filters</Button>
@@ -228,6 +203,5 @@ export function SearchAndFilterBar({filters, setFilters, requestToggle, setReque
         </Sheet>
       </div>
     </div>
-  )
+  );
 }
-
