@@ -2,8 +2,8 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Search, Newspaper, Phone, MapPin, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Square, CarFront, TreesIcon as Tree, Info } from 'lucide-react';
-import { motion } from "framer-motion";
+import { ArrowRightCircle, ArrowLeftCircle, Search, Newspaper, Phone, MapPin, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Square, CarFront, TreesIcon as Tree, Info } from 'lucide-react';
+import { AnimatePresence, motion } from "framer-motion";
 import { ImageSlideshow } from "../components/ImageSlideShow";
 import Background from "../realestate.jpg";
 import Image from "next/image";
@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import Link from "next/link";
 
 export default function LandingPage() {
   const [featured, setFeatured] = useState([]);
@@ -38,6 +39,17 @@ export default function LandingPage() {
     { name: "Villanova", image:  "https://photos.zillowstatic.com/fp/6559a8d8fcdb7e815053ed9a17bd267e-p_e.jpg"},
     { name: "Gladwyne", image:  Background},
     { name: "Haverford", image: Background },
+    { name: "Overbrook", image: Background },
+    { name: "Merion", image: Background },
+    { name: "Narberth", image: Background },
+    { name: "Wynnewood", image: Background },
+    { name: "Rosemont", image: Background },
+    { name: "St. Davids", image: Background },
+    { name: "Strafford", image: Background },
+    { name: "Devon", image: Background },
+    { name: "Daylesford", image: Background },
+    { name: "Paoli", image: Background },
+    { name: "Malvern", image: Background },
   ];
 
   const insightsAndMedia = [
@@ -232,40 +244,165 @@ function WhyChooseUs() {
   )
 }
 
-function ExploreAreas({ mainLineAreas }) {
+export function ExploreAreas({ mainLineAreas }) {
+  const [currentPage, setCurrentPage] = useState(0)
+  const [direction, setDirection] = useState(0)
+  const areasPerPage = 6
+  const totalPages = Math.ceil(mainLineAreas.length / areasPerPage)
+  
+  const currentAreas = mainLineAreas.slice(
+    currentPage * areasPerPage,
+    (currentPage + 1) * areasPerPage
+  )
+
+  const handleNextPage = () => {
+    setDirection(1)
+    setCurrentPage((prev) => (prev + 1) % totalPages)
+  }
+
+  const handlePrevPage = () => {
+    setDirection(-1)
+    setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages)
+  }
+
+  const variants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
+  }
+
   return (
     <section id="areas" className="w-full py-12 px-4 md:px-6 bg-gray-50">
       <div className="container px-4 md:px-6 mx-auto">
-        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-center mb-8">
-          Explore Main Line Areas
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {mainLineAreas.map((area) => (
-            <div
-              key={area.name}
-              className="relative overflow-hidden rounded-lg shadow-md group transition-transform duration-300 hover:scale-103"
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
+            Explore Main Line Areas
+          </h2>
+          <div className="flex space-x-4">
+            <Button
+              onClick={handlePrevPage}
+              variant="outline"
+              size="icon"
+              className="rounded-full transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground"
             >
-              <Image
-                src={area.image}
-                alt={`${area.name} area`}
-                width={400}
-                height={300}
-                className="object-cover w-full h-48 transition-transform duration-300 group-hover:scale-110"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-300" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                <h3 className="text-white text-xl font-bold mb-2">{area.name}</h3>
-                <Button variant="secondary" size="sm" className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  Learn More
-                </Button>
-              </div>
+              <ArrowLeftCircle className="h-6 w-6" />
+              <span className="sr-only">View previous areas</span>
+            </Button>
+            <Button
+              onClick={handleNextPage}
+              variant="outline"
+              size="icon"
+              className="rounded-full transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground"
+            >
+              <ArrowRightCircle className="h-6 w-6" />
+              <span className="sr-only">View next areas</span>
+            </Button>
+          </div>
+        </div>
+        
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={currentPage}
+            custom={direction}
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{
+              x: { type: "spring", stiffness: 300, damping: 30 },
+              opacity: { duration: 0.2 }
+            }}
+          >
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              {currentAreas.map((area, index) => (
+                <motion.div
+                  key={area.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: 0,
+                    transition: { delay: index * 0.1 } 
+                  }}
+                  className="relative overflow-hidden rounded-lg shadow-md group"
+                >
+                  <div className="aspect-w-16 aspect-h-12">
+                    <Image
+                      src={area.image}
+                      alt={`${area.name} area`}
+                      width={400}
+                      height={300}
+                      className="object-cover w-full h-48 transition-transform duration-500 group-hover:scale-110"
+                    />
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
+                    <h3 className="text-white text-xl font-bold mb-2 transform transition-transform duration-300 group-hover:-translate-y-1">
+                      {area.name}
+                    </h3>
+                    <Link href={`places/${area.name}`}>
+                      <Button 
+                        variant="secondary" 
+                        size="sm" 
+                        className="opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300"
+                      >
+                        Learn More
+                      </Button>
+                    </Link>
+                  </div>
+                </motion.div>
+              ))}
             </div>
-          ))}
+          </motion.div>
+        </AnimatePresence>
+        
+        <div className="mt-6 flex justify-center items-center space-x-2">
+          <Button
+            onClick={handlePrevPage}
+            variant="outline"
+            size="sm"
+            className="rounded-full transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground"
+          >
+            <ArrowLeftCircle className="h-4 w-4 mr-2" />
+            Previous
+          </Button>
+          <div className="flex gap-2">
+            {[...Array(totalPages)].map((_, i) => (
+              <div
+                key={i}
+                className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                  i === currentPage 
+                    ? 'bg-primary w-4' 
+                    : 'bg-gray-300 hover:bg-gray-400'
+                }`}
+              />
+            ))}
+          </div>
+          <Button
+            onClick={handleNextPage}
+            variant="outline"
+            size="sm"
+            className="rounded-full transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground"
+          >
+            Next
+            <ArrowRightCircle className="h-4 w-4 ml-2" />
+          </Button>
         </div>
       </div>
     </section>
   )
 }
+
 
 function SearchSection() {
   return (
@@ -459,7 +596,7 @@ function InsightsAndMedia({ insightsAndMedia }) {
                   ) : (
                     <>
                       <div className="aspect-w-16 aspect-h-9 mb-4">
-                        <YouTube videoId={item.videoId} opts={{ width: '100%', height: '300' }} />
+                        <YouTube videoId={item.videoId} opts={{ width: '100%', height: '230' }} />
                       </div>
                       <CardDescription>{item.description}</CardDescription>
                       <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
