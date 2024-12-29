@@ -3,7 +3,6 @@ import './globals.css'
 
 import Link from 'next/link'
 import { Home, Phone, Search } from 'lucide-react'
-import Image from 'next/image'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const merriweather = Merriweather({ weight: ['300', '400', '700', '900'], subsets: ['latin'], variable: '--font-merriweather' })

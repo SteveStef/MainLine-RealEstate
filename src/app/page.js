@@ -8,13 +8,21 @@ import { ImageSlideshow } from "../components/ImageSlideShow";
 import Background from "../realestate.jpg";
 import Image from "next/image";
 import YouTube from "react-youtube";
-import { useState, useEffect } from "react";
+import {useRef, useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
+import { GoogleMap, useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api';
 
 export default function LandingPage() {
+  const inputRef = useRef(null);
+  const { isLoaded } = useJsApiLoader({
+    id: 'google-map-script',
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
+    libraries: ["places"]
+  })
+  console.log(isLoaded);
   const [featured, setFeatured] = useState([]);
   useEffect(() => {
     async function getFeatured() {
@@ -100,7 +108,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-900">
       <main className="flex-1">
-        <HeroSection />
+        <HeroSection isLoaded={isLoaded} inputRef={inputRef}/>
         <WhyChooseUs />
         <ExploreAreas mainLineAreas={mainLineAreas} />
         <FeaturedProperties />
@@ -112,7 +120,14 @@ export default function LandingPage() {
   )
 }
 
-function HeroSection() {
+function HeroSection({ isLoaded, inputRef }) {
+  const handleOnPlacesChange = () => {
+  }
+  function handleSubmit(e) {
+    e.preventDefault();
+    let address = inputRef.current.getPlaces();
+    console.log(address)
+  }
   return (
     <section className="relative w-full">
       <ImageSlideshow />
@@ -138,13 +153,21 @@ function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              <form className="flex space-x-2">
+              {
+                isLoaded &&
+              <StandaloneSearchBox
+                onLoad={(ref)=>inputRef.current=ref}
+                onPlacesChanged={handleOnPlacesChange}
+                >
+              <form onSubmit={(e) => handleSubmit(e)} className="flex space-x-2">
                 <Input className="max-w-lg flex-1 bg-white/90 text-gray-900 placeholder-gray-500" placeholder="Search properties..." type="text" />
                 <Button type="submit" variant="secondary" className="bg-primary text-white hover:bg-primary/90">
                   <Search className="h-4 w-4" />
                   <span className="sr-only">Search</span>
                 </Button>
               </form>
+              </StandaloneSearchBox>
+              }
             </motion.div>
           </div>
         </motion.div>
