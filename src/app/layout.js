@@ -12,9 +12,7 @@ export const metadata = {
   description: 'Luxury real estate in the Main Line area',
 }
 
-export default function RootLayout({
-  children,
-}) {
+export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${merriweather.variable}`}>
       <body className="font-sans">
@@ -52,12 +50,9 @@ export default function RootLayout({
               </div>
             </div>
           </header>
-
-        <div className="bg-gradient-to-br from-blue-50 to-indigo-100 bg-opacity-50 backdrop-filter backdrop-blur-lg">
           <main className="flex-grow">
             {children}
           </main>
-    </div>
           <footer className="bg-gray-100 py-8 border-t border-gray-200">
             <div className="container mx-auto px-4">
               <p className="text-center text-sm text-gray-600">© 2024 Main Line Realty. All rights reserved.</p>
@@ -68,4 +63,3 @@ export default function RootLayout({
     </html>
   )
 }
-

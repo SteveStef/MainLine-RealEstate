@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowRightCircle, ArrowLeftCircle, Search, Newspaper, Phone, MapPin, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Square, CarFront, TreesIcon as Tree, Info } from 'lucide-react';
+import { ArrowRightCircle, ArrowLeftCircle, Search, Newspaper, Phone, MapPin, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Info } from 'lucide-react';
 import { AnimatePresence, motion } from "framer-motion";
 import { ImageSlideshow } from "../components/ImageSlideShow";
 import Background from "../realestate.jpg";
@@ -11,18 +11,18 @@ import YouTube from "react-youtube";
 import {useRef, useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import Link from "next/link";
-import { GoogleMap, useJsApiLoader, StandaloneSearchBox } from '@react-google-maps/api';
+import { useRouter } from "next/navigation";
+
+function isAddress(input) {
+  const addressPattern = /^\d+\s+([A-Za-z0-9.,'’-]+\s)+([A-Za-z]+,\s)?([A-Za-z]+\s)?[A-Z]{2}\s\d{5}$/;
+  return addressPattern.test(input.trim());
+}
 
 export default function LandingPage() {
   const inputRef = useRef(null);
-  const { isLoaded } = useJsApiLoader({
-    id: 'google-map-script',
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
-    libraries: ["places"]
-  })
-  console.log(isLoaded);
+
+
   const [featured, setFeatured] = useState([]);
   useEffect(() => {
     async function getFeatured() {
@@ -108,7 +108,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-900">
       <main className="flex-1">
-        <HeroSection isLoaded={isLoaded} inputRef={inputRef}/>
+        <HeroSection inputRef={inputRef}/>
         <WhyChooseUs />
         <ExploreAreas mainLineAreas={mainLineAreas} />
         <FeaturedProperties />
@@ -120,13 +120,19 @@ export default function LandingPage() {
   )
 }
 
-function HeroSection({ isLoaded, inputRef }) {
-  const handleOnPlacesChange = () => {
-  }
+function HeroSection({ inputRef }) {
+  const router = useRouter();
   function handleSubmit(e) {
     e.preventDefault();
-    let address = inputRef.current.getPlaces();
-    console.log(address)
+    if (inputRef.current) {
+      const loc = inputRef.current.value;
+      const queryUrl = encodeURIComponent(loc);
+      if(isAddress(loc)) {
+        router.push(`/properties/${queryUrl}`);
+      } else {
+        router.push(`/properties?loc=${queryUrl}`);
+      }
+    }
   }
   return (
     <section className="relative w-full">
@@ -153,21 +159,13 @@ function HeroSection({ isLoaded, inputRef }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              {
-                isLoaded &&
-              <StandaloneSearchBox
-                onLoad={(ref)=>inputRef.current=ref}
-                onPlacesChanged={handleOnPlacesChange}
-                >
               <form onSubmit={(e) => handleSubmit(e)} className="flex space-x-2">
-                <Input className="max-w-lg flex-1 bg-white/90 text-gray-900 placeholder-gray-500" placeholder="Search properties..." type="text" />
+                <Input ref={inputRef}className="max-w-lg flex-1 bg-white/90 text-gray-900 placeholder-gray-500" placeholder="Search properties..." type="text"/>
                 <Button type="submit" variant="secondary" className="bg-primary text-white hover:bg-primary/90">
                   <Search className="h-4 w-4" />
                   <span className="sr-only">Search</span>
                 </Button>
               </form>
-              </StandaloneSearchBox>
-              }
             </motion.div>
           </div>
         </motion.div>
@@ -244,21 +242,26 @@ function WhyChooseUs() {
   ];
 
   return (
-    <section className="w-full py-12 px-4 md:px-6 bg-white">
+    <section className="w-full py-12 px-4 md:px-6 bg-background">
       <div className="container mx-auto">
         <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-center mb-8">Why Choose Main Line Realty</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {reasons.map((reason, index) => (
             <motion.div
               key={index}
-              className="flex flex-col items-center text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <div className="mb-4">{reason.icon}</div>
-              <h3 className="text-xl font-semibold mb-2">{reason.title}</h3>
-              <p className="text-gray-600">{reason.description}</p>
+              <Card className="h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <CardHeader>
+                  <div className="mb-4 flex justify-center">{reason.icon}</div>
+                  <CardTitle className="text-xl font-semibold text-center">{reason.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground text-center">{reason.description}</p>
+                </CardContent>
+              </Card>
             </motion.div>
           ))}
         </div>
@@ -428,6 +431,36 @@ export function ExploreAreas({ mainLineAreas }) {
 
 
 function SearchSection() {
+  const loc = useRef(null);
+  const router = useRouter();
+
+  // State variables for form inputs
+  const [location, setLocation] = useState("");
+  const [propertyType, setPropertyType] = useState("");
+  const [priceRange, setPriceRange] = useState({ min: "", max: "" });
+  const [bedrooms, setBedrooms] = useState("");
+  const [bathrooms, setBathrooms] = useState("");
+  const [squareFootage, setSquareFootage] = useState(1000);
+  const [yearBuilt, setYearBuilt] = useState("");
+
+  function handleSubmit(e) {
+    e.preventDefault();
+
+    // Prepare query parameters
+    const query = new URLSearchParams({
+      loc: location,
+      type: propertyType,
+      minPrice: priceRange.min,
+      maxPrice: priceRange.max,
+      beds: bedrooms,
+      baths: bathrooms,
+      sqft: squareFootage,
+      year: yearBuilt,
+    }).toString();
+
+    router.push(`/properties?${query}`);
+  }
+
   return (
     <section id="search" className="w-full py-16 md:py-24 px-4 md:px-6 bg-gradient-to-b from-white to-gray-100">
       <div className="container mx-auto">
@@ -442,7 +475,7 @@ function SearchSection() {
               Find Your Dream Home
             </h2>
             <p className="text-gray-600 mb-8 text-lg leading-relaxed">
-              Use our advanced search to discover the perfect property that aligns with your lifestyle and preferences. Whether you're looking for a cozy apartment or a spacious family home, we've got you covered.
+              Use our advanced search to discover the perfect property that aligns with your lifestyle and preferences.
             </p>
             <Card className="bg-primary/5 border-primary/20">
               <CardHeader>
@@ -466,15 +499,16 @@ function SearchSection() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
+            onSubmit={handleSubmit}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Location</label>
-                <Input placeholder="e.g., Bryn Mawr, Ardmore" type="text" className="w-full" />
+                <Input ref={loc} placeholder="e.g., Bryn Mawr, Ardmore" type="text" className="w-full" />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Property Type</label>
-                <Select>
+                <Select onValueChange={setPropertyType}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
@@ -491,18 +525,30 @@ function SearchSection() {
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Price Range</label>
                 <div className="flex space-x-4">
-                  <Input placeholder="Min" type="number" className="w-1/2" />
-                  <Input placeholder="Max" type="number" className="w-1/2" />
+                  <Input
+                    placeholder="Min"
+                    type="number"
+                    className="w-1/2"
+                    value={priceRange.min}
+                    onChange={(e) => setPriceRange({ ...priceRange, min: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Max"
+                    type="number"
+                    className="w-1/2"
+                    value={priceRange.max}
+                    onChange={(e) => setPriceRange({ ...priceRange, max: e.target.value })}
+                  />
                 </div>
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Bedrooms</label>
-                <Select>
+                <Select onValueChange={setBedrooms}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    {[1, 2, 3, 4, 5].map(num => (
+                    {[1, 2, 3, 4, 5].map((num) => (
                       <SelectItem key={num} value={num.toString()}>{num}+</SelectItem>
                     ))}
                   </SelectContent>
@@ -510,12 +556,12 @@ function SearchSection() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Bathrooms</label>
-                <Select>
+                <Select onValueChange={setBathrooms}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select" />
                   </SelectTrigger>
                   <SelectContent>
-                    {[1, 2, 3, 4].map(num => (
+                    {[1, 2, 3, 4].map((num) => (
                       <SelectItem key={num} value={num.toString()}>{num}+</SelectItem>
                     ))}
                   </SelectContent>
@@ -523,8 +569,14 @@ function SearchSection() {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Square Footage</label>
-              <Slider defaultValue={[1000]} max={5000} step={100} className="py-4" />
+              <label className="text-sm font-medium text-gray-700">Square Footage: {squareFootage.toLocaleString()}</label>
+              <Slider
+                value={[squareFootage]}
+                onValueChange={(val) => setSquareFootage(val[0])}
+                max={5000}
+                step={100}
+                className="py-4"
+              />
               <div className="flex justify-between text-xs text-gray-500">
                 <span>0 sq ft</span>
                 <span>5000+ sq ft</span>
@@ -532,40 +584,16 @@ function SearchSection() {
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Year Built</label>
-              <Select>
+              <Select onValueChange={setYearBuilt}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select year" />
                 </SelectTrigger>
                 <SelectContent>
-                  {['2020+', '2010+', '2000+', '1990+', '1980+'].map(year => (
+                  {['2020+', '2010+', '2000+', '1990+', '1980+'].map((year) => (
                     <SelectItem key={year} value={year}>{year}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Amenities</label>
-              <div className="flex flex-wrap gap-2">
-                <TooltipProvider>
-                  {[
-                    { icon: CarFront, label: 'Garage' },
-                    { icon: Tree, label: 'Garden' },
-                    { icon: Square, label: 'Pool' },
-                  ].map(({ icon: Icon, label }) => (
-                    <Tooltip key={label}>
-                      <TooltipTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <Icon className="h-4 w-4 mr-2" />
-                          {label}
-                        </Button>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Filter for properties with a {label.toLowerCase()}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  ))}
-                </TooltipProvider>
-              </div>
             </div>
             <Button className="w-full bg-primary text-white hover:bg-primary/90 text-lg py-6" type="submit">
               <Search className="h-5 w-5 mr-2" />
@@ -575,7 +603,7 @@ function SearchSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }
 
 function InsightsAndMedia({ insightsAndMedia }) {

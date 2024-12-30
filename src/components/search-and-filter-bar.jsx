@@ -1,6 +1,5 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -20,10 +19,10 @@ import {
 } from '@/components/ui/sheet';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import {useRef} from "react"
+import { Search } from 'lucide-react';
 
-export function SearchAndFilterBar({ filters, setFilters, requestToggle, setRequestToggle }) {
-  const router = useRouter();
-
+export function SearchAndFilterBar({ StandaloneSearchBox , filters, setFilters, requestToggle, setRequestToggle }) {
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
@@ -32,17 +31,52 @@ export function SearchAndFilterBar({ filters, setFilters, requestToggle, setRequ
     setRequestToggle(!requestToggle);
   };
 
+  const searchBoxRef = useRef(null);
+
+  console.log(filters);
+
   return (
     <div className="space-y-4">
-      <div className="flex gap-2">
-        <Input
-          placeholder="Enter location, address, or ZIP"
-          value={filters.location}
-          onChange={(e) => handleFilterChange('location', e.target.value)}
-          className="flex-grow"
-        />
-        <Button onClick={handleSearch}>Search</Button>
-      </div>
+<form onSubmit={(e) => {
+  e.preventDefault();
+  handleSearch();
+}} className="w-full" style={{ position: 'relative' }}>
+  <StandaloneSearchBox
+    onLoad={(ref) => {
+      searchBoxRef.current = ref;
+    }}
+    onPlacesChanged={() => {
+      const places = searchBoxRef.current.getPlaces();
+      if (places && places.length > 0) {
+        const location = places[0].formatted_address;
+        handleFilterChange('location', location);
+        handleSearch();
+      }
+    }}
+    style={{ display: 'block', width: '100%' }}
+  >
+    <Input
+      placeholder="Enter location, address, or ZIP"
+      value={filters.location}
+      onChange={(e) => handleFilterChange('location', e.target.value)}
+      style={{ width: '100%', paddingRight: '40px' }} // Add space for the icon
+    />
+  </StandaloneSearchBox>
+
+  {/* Magnifying Glass Icon */}
+  <Search
+    onClick={handleSearch}
+    style={{
+      position: 'absolute',
+      top: '50%',
+      right: '10px',
+      transform: 'translateY(-50%)',
+      cursor: 'pointer',
+      fontSize: '16px',
+      color: '#888', // Adjust the color as needed
+    }}
+  />
+</form>
       <div className="flex flex-wrap gap-2">
         <Select
           value={filters.status}

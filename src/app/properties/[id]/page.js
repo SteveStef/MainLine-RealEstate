@@ -12,7 +12,7 @@ import { BedIcon, BathIcon, SquareIcon, Home, DollarSignIcon, CalendarIcon, Tree
 import Link from "next/link"
 
 // In a real application, this would fetch data from an API or database
-function getHouseDetails(id) {
+function getHouseDetails(address) {
   const houses = [
     { 
       id: '1', 
@@ -38,7 +38,7 @@ function getHouseDetails(id) {
     // Add more house objects as needed
   ]
 
-  const house = houses.find(h => h.id === id)
+  const house = houses.find(h => h.id === address)
   if (!house) notFound()
   return house
 }
@@ -72,31 +72,6 @@ export default function HouseDetailsPage({ params }) {
       className="container mx-auto px-4 py-8"
     >
 
-      <motion.header 
-        className="px-4 lg:px-6 h-14 flex items-center border-b border-gray-200"
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Link className="flex items-center justify-center" href="#">
-          <Home className="h-6 w-6 text-primary" />
-          <span className="ml-2 text-lg font-bold">Main Line Realty</span>
-        </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link className="text-sm font-medium hover:text-primary transition-colors" href="#properties">
-            Properties
-          </Link>
-          <Link className="text-sm font-medium hover:text-primary transition-colors" href="#search">
-            Search
-          </Link>
-          <Link className="text-sm font-medium hover:text-primary transition-colors" href="#blog">
-            Blog
-          </Link>
-          <Link className="text-sm font-medium hover:text-primary transition-colors" href="#contact">
-            Contact
-          </Link>
-        </nav>
-      </motion.header>
       <br></br>
       <motion.h1 
         initial={{ y: -20 }}
