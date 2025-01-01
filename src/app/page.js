@@ -22,7 +22,6 @@ function isAddress(input) {
 export default function LandingPage() {
   const inputRef = useRef(null);
 
-
   const [featured, setFeatured] = useState([]);
   useEffect(() => {
     async function getFeatured() {
@@ -431,22 +430,19 @@ export function ExploreAreas({ mainLineAreas }) {
 
 
 function SearchSection() {
-  const loc = useRef(null);
   const router = useRouter();
 
-  // State variables for form inputs
   const [location, setLocation] = useState("");
   const [propertyType, setPropertyType] = useState("");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [bedrooms, setBedrooms] = useState("");
   const [bathrooms, setBathrooms] = useState("");
   const [squareFootage, setSquareFootage] = useState(1000);
-  const [yearBuilt, setYearBuilt] = useState("");
+  const [status, setStatus] = useState("");
 
   function handleSubmit(e) {
     e.preventDefault();
 
-    // Prepare query parameters
     const query = new URLSearchParams({
       loc: location,
       type: propertyType,
@@ -455,7 +451,7 @@ function SearchSection() {
       beds: bedrooms,
       baths: bathrooms,
       sqft: squareFootage,
-      year: yearBuilt,
+      status: status,
     }).toString();
 
     router.push(`/properties?${query}`);
@@ -504,7 +500,7 @@ function SearchSection() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Location</label>
-                <Input ref={loc} placeholder="e.g., Bryn Mawr, Ardmore" type="text" className="w-full" />
+                <Input onChange={(e) => setLocation(e.target.value)} placeholder="e.g., Bryn Mawr, Ardmore" type="text" className="w-full" />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-gray-700">Property Type</label>
@@ -513,10 +509,12 @@ function SearchSection() {
                     <SelectValue placeholder="Select type" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="house">House</SelectItem>
+                    <SelectItem value="singlefamily">Single Family</SelectItem>
+                    <SelectItem value="multifamily">Multi-Family</SelectItem>
                     <SelectItem value="apartment">Apartment</SelectItem>
                     <SelectItem value="condo">Condo</SelectItem>
                     <SelectItem value="townhouse">Townhouse</SelectItem>
+                    <SelectItem value="lot/land">Lot/Land</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -583,14 +581,14 @@ function SearchSection() {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Year Built</label>
-              <Select onValueChange={setYearBuilt}>
+              <label className="text-sm font-medium text-gray-700">Status</label>
+              <Select onValueChange={setStatus}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select year" />
+                  <SelectValue placeholder="Select Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  {['2020+', '2010+', '2000+', '1990+', '1980+'].map((year) => (
-                    <SelectItem key={year} value={year}>{year}</SelectItem>
+                  {['For Sale', 'For Rent', 'Recently Sold'].map((st) => (
+                    <SelectItem key={st} value={st}>{st}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -725,29 +723,29 @@ function ContactSection() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">123 Main Line Avenue</p>
-                <p className="text-gray-600">Bryn Mawr, PA 19010</p>
+                <p className="text-gray-600">Main Line Reality</p>
+                <p className="text-gray-600">216 E Lancaster Ave, Wayne, PA 19087</p>
                 <p className="text-gray-600 mt-4 flex items-center">
                   <Phone className="h-4 w-4 mr-2 text-primary" />
-                  (123) 456-7890
+                  (610) 947-0408
                 </p>
                 <p className="text-gray-600 flex items-center">
                   <Mail className="h-4 w-4 mr-2 text-primary" />
-                  info@mainlinerealty.com
+                  peterstefanatos@compass.com
                 </p>
                 <p className="text-gray-600 mt-4 flex items-center">
                   <Clock className="h-4 w-4 mr-2 text-primary" />
                   Mon-Fri: 9AM-5PM
                 </p>
                 <div className="mt-4">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d12232.557465260424!2d-75.32174!3d40.022202!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c6b8941ceb4f27%3A0xf1d34ad631f11a56!2sBryn%20Mawr%2C%20PA!5e0!3m2!1sen!2sus!4v1655501234567!5m2!1sen!2sus"
-                    width="100%"
-                    height="200"
-                    style={{ border: 0 }}
-                    allowFullScreen=""
-                    loading="lazy"
-                  ></iframe>
+<iframe
+  width="600"
+  height="250"
+  loading="lazy"
+  allowfullscreen
+  referrerpolicy="no-referrer-when-downgrade"
+  src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&q=216+E+Lancaster+Ave,+Wayne,+PA+19087`}>
+</iframe>
                 </div>
               </CardContent>
             </Card>

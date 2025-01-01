@@ -36,22 +36,32 @@ export function HouseCard({ house }) {
             </Badge>
           </div>
           <div className="grid grid-cols-3 gap-2 text-sm text-muted-foreground">
+
+          {
+            house.bedrooms &&
             <div className="flex items-center">
               <BedIcon className="mr-1 h-4 w-4" />
               <span>{house.bedrooms} beds</span>
             </div>
+          }
+          {
+            house.bathrooms &&
             <div className="flex items-center">
               <BathIcon className="mr-1 h-4 w-4" />
               <span>{house.bathrooms} baths</span>
             </div>
+          }
+          {
+            house.lotAreaValue && 
             <div className="flex items-center">
               <SquareIcon className="mr-1 h-4 w-4" />
-              <span>{(house.lotAreaValue||"-1").toLocaleString()} {house.lotAreaUnit}</span>
+              <span>{(house.lotAreaValue).toLocaleString()} {house.lotAreaUnit}</span>
             </div>
+          }
           </div>
         </CardContent>
         <CardFooter className="bg-muted p-4">
-          <Link href={`/houses/${house.zpid}`} className="w-full">
+          <Link href={`/properties/${house.streetAddress}?city=${house.city}&state=${house.state}`} className="w-full">
             <Button className="w-full">View Details</Button>
           </Link>
         </CardFooter>

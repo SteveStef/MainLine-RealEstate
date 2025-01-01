@@ -21,7 +21,6 @@ const center = {
 }
 
 export default function HousesPage({ searchParams }) {
-  console.log(searchParams);
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
     libraries: ["places"]
@@ -37,26 +36,25 @@ export default function HousesPage({ searchParams }) {
   const [requestToggle, setRequestToggle] = useState(false);
   const [hoveredHouse, setHoveredHouse] = useState(null);
   const hoverTimeoutRef = useRef(null); // Ref to track hover timeout
-  const [selectedHouse, setSelectedHouse] = useState(null);
   const [isInfoWindowHovered, setIsInfoWindowHovered] = useState(false); // Track mouse over InfoWindow
 
   const [filters, setFilters] = useState({
-    location: "Villanova, PA",
-    status: "forSale",
-    price_min: "",
-    price_max: "",
-    beds_min: "",
+    location: searchParams.loc || "Villanova, PA",
+    status: (searchParams.status && (searchParams.status.trim()).toLowerCase()) || "forSale",
+    price_min: searchParams.minPrice || "",
+    price_max: searchParams.maxPrice || "",
+    beds_min: searchParams.beds || "",
     beds_max: "",
-    baths_min: "",
+    baths_min: searchParams.baths || "",
     baths_max: "",
-    sqft_min: "",
+    sqft_min: searchParams.sqft || "",
     sqft_max: "",
-    isSingleFamily: false,
-    isMultiFamily: false,
-    isApartment: false,
-    isCondo: false,
-    isTownhouse: false,
-    isLotLand: false,
+    isSingleFamily: (searchParams.type || "") === "singlefamily",
+    isMultiFamily: (searchParams.type || "") === "multifamily",
+    isApartment: (searchParams.type || "") === "apartment",
+    isCondo: (searchParams.type || "") === "condo",
+    isTownhouse: (searchParams.type || "") === "townhouse",
+    isLotLand: (searchParams.type || "") === "lot/land",
     hasPool: false,
     hasGarage: false,
     daysOnMarket: "any",
@@ -69,7 +67,6 @@ export default function HousesPage({ searchParams }) {
         let url = `${process.env.NEXT_PUBLIC_API_URL}/getPropertyByCity`;
         const options = { method: "POST", headers: { "Content-Type": 'application/json' }, body: JSON.stringify(filters) };
         const data = await fetch(url, options);
-        console.log(data);
         if(data.ok) {
           const text = await data.text(); 
           const jsonRes = await JSON.parse(text);
@@ -86,11 +83,6 @@ export default function HousesPage({ searchParams }) {
   }, [requestToggle]);
 
   console.log(houses);
-  const handleMarkerClick = (house) => {
-    setSelectedHouse(house);
-    console.log("Marker clicked:", house);
-  };
-
   return (
     <div className="flex h-screen overflow-hidden">
       <div className="flex-1 overflow-y-auto">
@@ -164,7 +156,6 @@ export default function HousesPage({ searchParams }) {
       if (!isInfoWindowHovered) setHoveredHouse(null); // Only close if InfoWindow is not hovered
     }, 300);
   }}
-  onClick={() => handleMarkerClick(house)}
 />
 {hoveredHouse === house && (
   <InfoWindow

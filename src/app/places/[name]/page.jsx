@@ -83,6 +83,7 @@ export default function MainLineDetails({params}) {
       const response = await fetch(url, options);
       const txt = await response.text();
       const json = await JSON.parse(txt);
+      console.log(json);
       setFilteredItems(json.results);
       setIsDropdownOpen(false);
     } catch(err) {
@@ -344,6 +345,7 @@ export default function MainLineDetails({params}) {
                           <span className="font-bold text-green-700">{item.rating}</span>
                         </div>
                         <span className="text-sm text-gray-600">{item.user_ratings_total} reviews</span>
+                        <span className="text-sm text-gray-600">{item.vicinity} reviews</span>
                       </div>
                       {item.priceLevel && (
                         <div className="mt-2 flex justify-between items-center">

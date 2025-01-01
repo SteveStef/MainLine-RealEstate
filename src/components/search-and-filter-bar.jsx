@@ -33,8 +33,6 @@ export function SearchAndFilterBar({ StandaloneSearchBox , filters, setFilters, 
 
   const searchBoxRef = useRef(null);
 
-  console.log(filters);
-
   return (
     <div className="space-y-4">
 <form onSubmit={(e) => {
