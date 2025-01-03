@@ -8,19 +8,15 @@ import { ImageSlideshow } from "../components/ImageSlideShow";
 import Background from "../realestate.jpg";
 import Image from "next/image";
 import YouTube from "react-youtube";
-import {useRef, useState, useEffect } from "react";
+import {useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import AIChatAssistant from "../components/AiChat";
 
-function isAddress(input) {
-  const addressPattern = /^\d+\s+([A-Za-z0-9.,'’-]+\s)+([A-Za-z]+,\s)?([A-Za-z]+\s)?[A-Z]{2}\s\d{5}$/;
-  return addressPattern.test(input.trim());
-}
 
 export default function LandingPage() {
-  const inputRef = useRef(null);
 
   const [featured, setFeatured] = useState([]);
   useEffect(() => {
@@ -107,7 +103,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-900">
       <main className="flex-1">
-        <HeroSection inputRef={inputRef}/>
+        <HeroSection />
         <WhyChooseUs />
         <ExploreAreas mainLineAreas={mainLineAreas} />
         <FeaturedProperties />
@@ -119,20 +115,7 @@ export default function LandingPage() {
   )
 }
 
-function HeroSection({ inputRef }) {
-  const router = useRouter();
-  function handleSubmit(e) {
-    e.preventDefault();
-    if (inputRef.current) {
-      const loc = inputRef.current.value;
-      const queryUrl = encodeURIComponent(loc);
-      if(isAddress(loc)) {
-        router.push(`/properties/${queryUrl}`);
-      } else {
-        router.push(`/properties?loc=${queryUrl}`);
-      }
-    }
-  }
+function HeroSection() {
   return (
     <section className="relative w-full">
       <ImageSlideshow />
@@ -158,14 +141,8 @@ function HeroSection({ inputRef }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.5 }}
             >
-              <form onSubmit={(e) => handleSubmit(e)} className="flex space-x-2">
-                <Input ref={inputRef}className="max-w-lg flex-1 bg-white/90 text-gray-900 placeholder-gray-500" placeholder="Search properties..." type="text"/>
-                <Button type="submit" variant="secondary" className="bg-primary text-white hover:bg-primary/90">
-                  <Search className="h-4 w-4" />
-                  <span className="sr-only">Search</span>
-                </Button>
-              </form>
             </motion.div>
+    <AIChatAssistant />
           </div>
         </motion.div>
       </div>

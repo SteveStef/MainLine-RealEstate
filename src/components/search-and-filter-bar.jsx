@@ -19,11 +19,15 @@ import {
 } from '@/components/ui/sheet';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import {useRef} from "react"
+import { useRef } from "react";
 import { Search } from 'lucide-react';
+import { Slider } from "@/components/ui/slider";
 
-export function SearchAndFilterBar({ StandaloneSearchBox , filters, setFilters, requestToggle, setRequestToggle }) {
+export function SearchAndFilterBar({ StandaloneSearchBox, filters, setFilters, requestToggle, setRequestToggle }) {
   const handleFilterChange = (key, value) => {
+    if (typeof value === 'boolean') {
+      value = value.toString();
+    }
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -35,47 +39,48 @@ export function SearchAndFilterBar({ StandaloneSearchBox , filters, setFilters, 
 
   return (
     <div className="space-y-4">
-<form onSubmit={(e) => {
-  e.preventDefault();
-  handleSearch();
-}} className="w-full" style={{ position: 'relative' }}>
-  <StandaloneSearchBox
-    onLoad={(ref) => {
-      searchBoxRef.current = ref;
-    }}
-    onPlacesChanged={() => {
-      const places = searchBoxRef.current.getPlaces();
-      if (places && places.length > 0) {
-        const location = places[0].formatted_address;
-        handleFilterChange('location', location);
+      <form onSubmit={(e) => {
+        e.preventDefault();
         handleSearch();
-      }
-    }}
-    style={{ display: 'block', width: '100%' }}
-  >
-    <Input
-      placeholder="Enter location, address, or ZIP"
-      value={filters.location}
-      onChange={(e) => handleFilterChange('location', e.target.value)}
-      style={{ width: '100%', paddingRight: '40px' }} // Add space for the icon
-    />
-  </StandaloneSearchBox>
+      }} className="w-full" style={{ position: 'relative' }}>
+        <StandaloneSearchBox
+          onLoad={(ref) => {
+            searchBoxRef.current = ref;
+          }}
+          onPlacesChanged={() => {
+            const places = searchBoxRef.current.getPlaces();
+            if (places && places.length > 0) {
+              const location = places[0].formatted_address;
+              handleFilterChange('location', location);
+              handleSearch();
+            }
+          }}
+          style={{ display: 'block', width: '100%' }}
+        >
+          <Input
+            placeholder="Enter location, address, or ZIP"
+            value={filters.location}
+            onChange={(e) => handleFilterChange('location', e.target.value)}
+            style={{ width: '100%', paddingRight: '40px' }}
+          />
+        </StandaloneSearchBox>
 
-  {/* Magnifying Glass Icon */}
-  <Search
-    onClick={handleSearch}
-    style={{
-      position: 'absolute',
-      top: '50%',
-      right: '10px',
-      transform: 'translateY(-50%)',
-      cursor: 'pointer',
-      fontSize: '16px',
-      color: '#888', // Adjust the color as needed
-    }}
-  />
-</form>
+        <Search
+          onClick={handleSearch}
+          style={{
+            position: 'absolute',
+            top: '50%',
+            right: '10px',
+            transform: 'translateY(-50%)',
+            cursor: 'pointer',
+            fontSize: '16px',
+            color: '#888',
+          }}
+        />
+      </form>
+
       <div className="flex flex-wrap gap-2">
+      <div className="flex">
         <Select
           value={filters.status}
           onValueChange={(value) => handleFilterChange('status', value)}
@@ -89,11 +94,32 @@ export function SearchAndFilterBar({ StandaloneSearchBox , filters, setFilters, 
             <SelectItem value="recentlySold">Recently Sold</SelectItem>
           </SelectContent>
         </Select>
+
+    <Select
+    value={filters.sortSelection}
+    onValueChange={(value) => handleFilterChange('sortSelection', value)}
+    >
+    <SelectTrigger>
+    <SelectValue placeholder="Select sorting" />
+    </SelectTrigger>
+    <SelectContent>
+    <SelectItem value="priced">Price (High to Low)</SelectItem>
+    <SelectItem value="pricea">Price (Low to High)</SelectItem>
+    <SelectItem value="priorityScore">Priority Score</SelectItem>
+    <SelectItem value="listingStatus">Listing Status</SelectItem>
+    <SelectItem value="days">Days on market</SelectItem>
+    <SelectItem value="beds">Bedrooms</SelectItem>
+    <SelectItem value="baths">Bathrooms</SelectItem>
+    <SelectItem value="size">Size</SelectItem>
+    <SelectItem value="lot">Lot Size</SelectItem>
+    </SelectContent>
+    </Select></div>
+
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="outline">More Filters</Button>
           </SheetTrigger>
-          <SheetContent className="w-[400px] sm:w-[540px]">
+          <SheetContent className="w-[400px] sm:w-[540px] overflow-y-auto">
             <SheetHeader>
               <SheetTitle>Filters</SheetTitle>
               <SheetDescription>
@@ -121,40 +147,39 @@ export function SearchAndFilterBar({ StandaloneSearchBox , filters, setFilters, 
               </div>
               <div className="grid gap-2">
                 <Label>Bedrooms</Label>
-                <Select
-                  value={filters.beds_min?.toString() || "0"}
-                  onValueChange={(value) => handleFilterChange('beds_min', parseInt(value))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Any" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">Any</SelectItem>
-                    <SelectItem value="1">1+</SelectItem>
-                    <SelectItem value="2">2+</SelectItem>
-                    <SelectItem value="3">3+</SelectItem>
-                    <SelectItem value="4">4+</SelectItem>
-                    <SelectItem value="5">5+</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Min"
+                    value={filters.beds_min}
+                    onChange={(e) => handleFilterChange('beds_min', e.target.value)}
+                  />
+                  <span>to</span>
+                  <Input
+                    type="number"
+                    placeholder="Max"
+                    value={filters.beds_max}
+                    onChange={(e) => handleFilterChange('beds_max', e.target.value)}
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label>Bathrooms</Label>
-                <Select
-                  value={filters.baths_min?.toString() || "0"}
-                  onValueChange={(value) => handleFilterChange('baths_min', parseInt(value))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Any" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="0">Any</SelectItem>
-                    <SelectItem value="1">1+</SelectItem>
-                    <SelectItem value="2">2+</SelectItem>
-                    <SelectItem value="3">3+</SelectItem>
-                    <SelectItem value="4">4+</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Min"
+                    value={filters.baths_min}
+                    onChange={(e) => handleFilterChange('baths_min', e.target.value)}
+                  />
+                  <span>to</span>
+                  <Input
+                    type="number"
+                    placeholder="Max"
+                    value={filters.baths_max}
+                    onChange={(e) => handleFilterChange('baths_max', e.target.value)}
+                  />
+                </div>
               </div>
               <div className="grid gap-2">
                 <Label>Square Feet</Label>
@@ -175,6 +200,79 @@ export function SearchAndFilterBar({ StandaloneSearchBox , filters, setFilters, 
                 </div>
               </div>
               <div className="grid gap-2">
+                <Label>Monthly Payment</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Min"
+                    value={filters.monthlyPayment_min}
+                    onChange={(e) => handleFilterChange('monthlyPayment_min', e.target.value)}
+                  />
+                  <span>to</span>
+                  <Input
+                    type="number"
+                    placeholder="Max"
+                    value={filters.monthlyPayment_max}
+                    onChange={(e) => handleFilterChange('monthlyPayment_max', e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Label>HOA Fees</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Min"
+                    value={filters.hoa_min}
+                    onChange={(e) => handleFilterChange('hoa_min', e.target.value)}
+                  />
+                  <span>to</span>
+                  <Input
+                    type="number"
+                    placeholder="Max"
+                    value={filters.hoa_max}
+                    onChange={(e) => handleFilterChange('hoa_max', e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid gap-2">
+                <Label>Parking Spots (Minimum)</Label>
+                <Input
+                  type="number"
+                  value={filters.parkingSpots_min}
+                  onChange={(e) => handleFilterChange('parkingSpots_min', e.target.value)}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label>Great Schools Rating (Minimum)</Label>
+                <Slider
+                  min={1}
+                  max={10}
+                  step={1}
+                  value={[parseInt(filters.greatSchoolsRating_min) || 1]}
+                  onValueChange={(value) => handleFilterChange('greatSchoolsRating_min', value[0].toString())}
+                />
+                <span>{filters.greatSchoolsRating_min || 1}</span>
+              </div>
+              <div className="grid gap-2">
+                <Label>Lot Size (acres)</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Min"
+                    value={filters.lotSize_min}
+                    onChange={(e) => handleFilterChange('lotSize_min', e.target.value)}
+                  />
+                  <span>to</span>
+                  <Input
+                    type="number"
+                    placeholder="Max"
+                    value={filters.lotSize_max}
+                    onChange={(e) => handleFilterChange('lotSize_max', e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid gap-2">
                 <Label>Property Type</Label>
                 <div className="flex flex-wrap gap-2">
                   {[
@@ -182,13 +280,14 @@ export function SearchAndFilterBar({ StandaloneSearchBox , filters, setFilters, 
                     { key: 'isMultiFamily', label: 'Multi-Family' },
                     { key: 'isApartment', label: 'Apartment' },
                     { key: 'isCondo', label: 'Condo' },
+                    { key: 'isManufactured', label: 'Manufactured' },
                     { key: 'isTownhouse', label: 'Townhouse' },
                     { key: 'isLotLand', label: 'Lot/Land' },
                   ].map(({ key, label }) => (
                     <Button
                       key={key}
-                      variant={filters[key] ? 'default' : 'outline'}
-                      onClick={() => handleFilterChange(key, !filters[key])}
+                      variant={filters[key] === "true" ? 'default' : 'outline'}
+                      onClick={() => handleFilterChange(key, (filters[key] !== "true").toString())}
                     >
                       {label}
                     </Button>
@@ -198,16 +297,16 @@ export function SearchAndFilterBar({ StandaloneSearchBox , filters, setFilters, 
               <div className="flex items-center gap-2">
                 <Switch
                   id="hasPool"
-                  checked={filters.hasPool || false}
-                  onCheckedChange={(checked) => handleFilterChange('hasPool', checked)}
+                  checked={filters.hasPool === "true"}
+                  onCheckedChange={(checked) => handleFilterChange('hasPool', checked.toString())}
                 />
                 <Label htmlFor="hasPool">Has Pool</Label>
               </div>
               <div className="flex items-center gap-2">
                 <Switch
                   id="hasGarage"
-                  checked={filters.hasGarage || false}
-                  onCheckedChange={(checked) => handleFilterChange('hasGarage', checked)}
+                  checked={filters.hasGarage === "true"}
+                  onCheckedChange={(checked) => handleFilterChange('hasGarage', checked.toString())}
                 />
                 <Label htmlFor="hasGarage">Has Garage</Label>
               </div>
@@ -221,7 +320,7 @@ export function SearchAndFilterBar({ StandaloneSearchBox , filters, setFilters, 
                     <SelectValue placeholder="Any" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="any">Any</SelectItem>
+                    <SelectItem value="0">Any</SelectItem>
                     <SelectItem value="1">1 Day</SelectItem>
                     <SelectItem value="7">7 Days</SelectItem>
                     <SelectItem value="30">30 Days</SelectItem>
@@ -237,3 +336,4 @@ export function SearchAndFilterBar({ StandaloneSearchBox , filters, setFilters, 
     </div>
   );
 }
+

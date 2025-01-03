@@ -39,26 +39,38 @@ export default function HousesPage({ searchParams }) {
   const [isInfoWindowHovered, setIsInfoWindowHovered] = useState(false); // Track mouse over InfoWindow
 
   const [filters, setFilters] = useState({
-    location: searchParams.loc || "Villanova, PA",
-    status: (searchParams.status && (searchParams.status.trim()).toLowerCase()) || "forSale",
-    price_min: searchParams.minPrice || "",
-    price_max: searchParams.maxPrice || "",
-    beds_min: searchParams.beds || "",
-    beds_max: "",
-    baths_min: searchParams.baths || "",
-    baths_max: "",
-    sqft_min: searchParams.sqft || "",
-    sqft_max: "",
+    location: searchParams?.loc || "",
+    status: searchParams?.status || "forSale",
+    price_min: searchParams?.price_min || "",
+    price_max: searchParams?.price_max || "",
+    beds_min: searchParams?.beds_min || "",
+    beds_max: searchParams?.beds_max || "",
+    baths_min: searchParams?.baths_min || "",
+    baths_max: searchParams?.baths_max || "",
+    sqft_min: searchParams?.sqft_min || "",
+    sqft_max: searchParams?.sqft_max || "",
+
     isSingleFamily: (searchParams.type || "") === "singlefamily",
     isMultiFamily: (searchParams.type || "") === "multifamily",
     isApartment: (searchParams.type || "") === "apartment",
     isCondo: (searchParams.type || "") === "condo",
     isTownhouse: (searchParams.type || "") === "townhouse",
     isLotLand: (searchParams.type || "") === "lot/land",
-    hasPool: false,
-    hasGarage: false,
-    daysOnMarket: "any",
-    page: "1",
+
+    isManufactured: searchParams?.isManufactured || "",
+    hasPool: searchParams?.hasPool || "",
+    hasGarage: searchParams?.hasGarage || "",
+    daysOnMarket: searchParams?.daysOnMarket || "0",
+    page: searchParams?.page || "1",
+    sortSelection: searchParams?.sortSelection || "",
+    monthlyPayment_min: searchParams?.monthlyPayment_min || "",
+    monthlyPayment_max: searchParams?.monthlyPayment_max || "",
+    hoa_min: searchParams?.hoa_min || "",
+    hoa_max: searchParams?.hoa_max || "",
+    parkingSpots_min: searchParams?.parkingSpots_min || "",
+    greatSchoolsRating_min: searchParams?.greatSchoolsRating_min || "",
+    lotSize_min: searchParams?.lotSize_min || "",
+    lotSize_max: searchParams?.lotSize_max || ""
   });
 
   useEffect(() => {
@@ -82,7 +94,6 @@ export default function HousesPage({ searchParams }) {
     searchProperties();
   }, [requestToggle]);
 
-  console.log(houses);
   return (
     <div className="flex h-screen overflow-hidden">
       <div className="flex-1 overflow-y-auto">
@@ -220,4 +231,25 @@ export default function HousesPage({ searchParams }) {
     </div>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

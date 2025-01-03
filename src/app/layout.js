@@ -1,8 +1,7 @@
 import { Inter, Merriweather } from 'next/font/google'
 import './globals.css'
-
 import Link from 'next/link'
-import { Home, Phone } from 'lucide-react';
+import { Phone, Mail, MapPin } from 'lucide-react'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 const merriweather = Merriweather({ weight: ['300', '400', '700', '900'], subsets: ['latin'], variable: '--font-merriweather' })
@@ -15,35 +14,40 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${merriweather.variable}`}>
-      <body className="">
+      <body className="font-sans">
         <div className="flex flex-col min-h-screen">
           <header className="bg-white shadow-md">
-            <div className="container mx-auto px-4 lg:px-8">
-              <div className="flex items-center justify-between h-20">
-                <Link href="/" className="flex items-center space-x-3">
-                  <Home />
-                  <span className="text-xl font-bold text-gray-800 font-serif">Main Line Realty</span>
+            <div className="container mx-auto px-4">
+              <div className="flex justify-between items-center py-4">
+                <Link href="/" className="flex items-center space-x-2">
+                  <span className="text-2xl font-bold text-gray-800 font-serif">Main Line Realty</span>
                 </Link>
                 <nav className="hidden md:flex space-x-8">
-                  <Link className="text-md font-medium text-gray-600 hover:text-primary transition-colors" href="/properties">
-                    Properties
-                  </Link>
-                  <Link className="text-md font-medium text-gray-600 hover:text-primary transition-colors" href="/blog/1">
-                    Blog
-                  </Link>
-                  <Link className="text-md font-medium text-gray-600 hover:text-primary transition-colors" href="/contact">
-                    Contact
-                  </Link>
+                  <Link href="/properties" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Properties</Link>
+                  <Link href="/about" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">About Me</Link>
+                  <Link href="/blog" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Blog</Link>
+                  <Link href="/contact" className="text-gray-600 hover:text-gray-900 transition duration-150 ease-in-out">Contact</Link>
                 </nav>
-                <div className="flex items-center space-x-4">
-                  <Link href="/contact" className="hidden md:flex items-center space-x-2 text-primary hover:text-primary-dark transition-colors">
-                    <Phone className="h-5 w-5" />
-                    <span className="text-sm font-medium">Call Us</span>
-                  </Link>
+                <div className="hidden md:flex items-center space-x-4">
+                  <a href="tel:+12345678900" className="flex items-center text-gray-600 hover:text-gray-900">
+                    <Phone size={18} className="mr-2" />
+                    <span>(234) 567-8900</span>
+                  </a>
+                  <a href="mailto:info@mainlinerealty.com" className="flex items-center text-gray-600 hover:text-gray-900">
+                    <Mail size={18} className="mr-2" />
+                    <span>info@mainlinerealty.com</span>
+                  </a>
                 </div>
               </div>
             </div>
-              <div className="bg-black w-100" style={{height: "1px"}}></div>
+            <div className="bg-gray-100 py-2">
+              <div className="container mx-auto px-4">
+                <div className="flex items-center text-sm text-gray-600">
+                  <MapPin size={16} className="mr-2" />
+                  <span>216 E Lancaster Ave, Wayne, PA 19087</span>
+                </div>
+              </div>
+            </div>
           </header>
           <main className="flex-grow">
             {children}
@@ -58,3 +62,4 @@ export default function RootLayout({ children }) {
     </html>
   )
 }
+
