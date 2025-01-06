@@ -9,6 +9,7 @@ import { StandaloneSearchBox, useJsApiLoader, GoogleMap, Marker, InfoWindow} fro
 import React, {useRef} from "react";
 import Image from "next/image";
 import Link from "next/link"
+import { useRouter } from "next/navigation";
 
 const mark = <svg width="30" height="30" viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg">
   <path d="M15 0C9.47715 0 5 4.47715 5 10C5 17.5 15 30 15 30C15 30 25 17.5 25 10C25 4.47715 20.5228 0 15 0Z" fill="#3B82F6"/>
@@ -21,6 +22,7 @@ const center = {
 }
 
 export default function HousesPage({ searchParams }) {
+
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
     libraries: ["places"]
@@ -37,9 +39,10 @@ export default function HousesPage({ searchParams }) {
   const [hoveredHouse, setHoveredHouse] = useState(null);
   const hoverTimeoutRef = useRef(null); // Ref to track hover timeout
   const [isInfoWindowHovered, setIsInfoWindowHovered] = useState(false); // Track mouse over InfoWindow
+  const router = useRouter();
 
   const [filters, setFilters] = useState({
-    location: searchParams?.loc || "",
+    location: searchParams?.location || "Villanova, PA",
     status: searchParams?.status || "forSale",
     price_min: searchParams?.price_min || "",
     price_max: searchParams?.price_max || "",
@@ -50,17 +53,18 @@ export default function HousesPage({ searchParams }) {
     sqft_min: searchParams?.sqft_min || "",
     sqft_max: searchParams?.sqft_max || "",
 
-    isSingleFamily: (searchParams.type || "") === "singlefamily",
-    isMultiFamily: (searchParams.type || "") === "multifamily",
-    isApartment: (searchParams.type || "") === "apartment",
-    isCondo: (searchParams.type || "") === "condo",
-    isTownhouse: (searchParams.type || "") === "townhouse",
-    isLotLand: (searchParams.type || "") === "lot/land",
+    isSingleFamily: searchParams?.isSingleFamily === "true",
+    isMultiFamily: searchParams?.isMultiFamily === "true",
+    isApartment: searchParams?.isApartment === "true",
+    isCondo: searchParams?.isCondo === "true",
+    isTownhouse: searchParams?.isTownhouse === "true",
+    isLotLand: searchParams?.isLotLand === "true",
+    hasPool: searchParams?.hasPool === "true",
+    hasGarage: searchParams?.hasGarage === "true",
+    singleStory: searchParams?.singleStory === "true",
 
     isManufactured: searchParams?.isManufactured || "",
-    hasPool: searchParams?.hasPool || "",
-    hasGarage: searchParams?.hasGarage || "",
-    daysOnMarket: searchParams?.daysOnMarket || "0",
+    doz: searchParams?.doz || "",
     page: searchParams?.page || "1",
     sortSelection: searchParams?.sortSelection || "",
     monthlyPayment_min: searchParams?.monthlyPayment_min || "",
@@ -76,13 +80,21 @@ export default function HousesPage({ searchParams }) {
   useEffect(() => {
     async function searchProperties() {
       try {
+        console.log("This function was called");
         let url = `${process.env.NEXT_PUBLIC_API_URL}/getPropertyByCity`;
         const options = { method: "POST", headers: { "Content-Type": 'application/json' }, body: JSON.stringify(filters) };
         const data = await fetch(url, options);
         if(data.ok) {
           const text = await data.text(); 
           const jsonRes = await JSON.parse(text);
-          setHouses(jsonRes.results);
+          console.log(jsonRes);
+          if(jsonRes.results.error) setHouses([]);
+          else if(jsonRes.results.length === 2 && jsonRes.results[1] === 200) {
+            const formattedAddress = encodeURIComponent(filters.location.trim());
+            router.push(`/properties/${formattedAddress}`);
+            return;
+          }
+          else setHouses(jsonRes.results);
         } else {
           setHouses([]);
         }
@@ -231,25 +243,3 @@ export default function HousesPage({ searchParams }) {
     </div>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

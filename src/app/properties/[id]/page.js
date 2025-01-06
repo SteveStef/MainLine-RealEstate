@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { 
   DollarSign, 
-  TrendingUp, 
-  Percent, 
   Circle, 
   HomeIcon, 
   User, 
@@ -19,8 +17,6 @@ import {
   TreesIcon as Tree, 
   Car, 
   MapPin, 
-  FootprintsIcon as Walking, 
-  Bus, 
   Calculator, 
   Warehouse, 
   Thermometer, 
@@ -34,17 +30,7 @@ import {
   Key, 
   HardHat, 
   Hammer, 
-  Lightbulb, 
-  Footprints, 
-  Leaf, 
-  Mountain, 
-  Eye, 
-  Wifi, 
-  Trash2, 
-  Fence, 
-  Info, 
-  TypeIcon as type, 
-  LucideIcon 
+  Lightbulb, Footprints,Leaf,Mountain, Eye,Wifi,Trash2, Fence,Info, 
 } from 'lucide-react';
 import Link from "next/link";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -68,35 +54,26 @@ function sortAndSlice(list) {
   }
 }
 
-function isAddress(input) {
-  const addressPattern = /^\d+\s*([A-Za-z0-9.,'’-]+\s*)+([A-Za-z]+,\s*)?([A-Za-z]+\s*)?[A-Z]{2}(\s*\d{5})?$/;
-  return addressPattern.test(input.trim());
-}
-
 export default function HouseDetails(props) {
   const { id } = props.params;
-  const { city, state } = props.searchParams;
+  let address = `${decodeURIComponent(id)}`;
 
-  const address = `${decodeURIComponent(id)}, ${city} ${state}`;
   const [isValid, setIsValid] = useState(true);
   const [houseData, setHouseData] = useState(null);
 
   useEffect(() => {
     async function getAddressInformation() {
-      if(!isAddress(address)) {
-        setIsValid(false);
-        return;
-      }
       try {
         const url = `${process.env.NEXT_PUBLIC_API_URL}/getPropertyByAddress?address=${address}`;
         const options = { method: "GET" };
         const data = await fetch(url, options);
-        if(!data.ok) {
+        if(!data.ok || data.error) {
           setIsValid(false);
           return;
         }
         const text = await data.text(); 
         const jsonRes = await JSON.parse(text);
+        console.log(jsonRes)
         setHouseData(jsonRes);
       } catch(err) {
         console.log(err);
@@ -107,14 +84,16 @@ export default function HouseDetails(props) {
   },[]);
 
   if(!isValid) return <NoPropertyFound address={address}/>
-  console.log(houseData);
 
   return (
     <>
       {houseData ? (
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-4xl font-bold mb-6 text-gray-800">{address}</h1>
+          {
+            houseData.photos?.length > 0 &&
           <ImageCollage images={houseData.photos} />
+          }
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
             <div className="lg:col-span-2">
               <PropertyInfo data={houseData} />
@@ -255,7 +234,7 @@ function PropertyInfo({ data }) {
         />
         <InfoItem
           icon={<Tree className="text-green-700" />}
-          value={`${data.lotAreaValue || "N/A"} ${data.lotAreaUnits}`}
+          value={`${data.lotAreaValue?.toFixed(2) || "N/A"} ${data.lotAreaUnits}`}
           label="Lot Area"
         />
         <InfoItem

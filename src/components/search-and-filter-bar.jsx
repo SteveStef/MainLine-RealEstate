@@ -25,9 +25,7 @@ import { Slider } from "@/components/ui/slider";
 
 export function SearchAndFilterBar({ StandaloneSearchBox, filters, setFilters, requestToggle, setRequestToggle }) {
   const handleFilterChange = (key, value) => {
-    if (typeof value === 'boolean') {
-      value = value.toString();
-    }
+    if(value === "true") value = true;
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
@@ -286,8 +284,8 @@ export function SearchAndFilterBar({ StandaloneSearchBox, filters, setFilters, r
                   ].map(({ key, label }) => (
                     <Button
                       key={key}
-                      variant={filters[key] === "true" ? 'default' : 'outline'}
-                      onClick={() => handleFilterChange(key, (filters[key] !== "true").toString())}
+                      variant={filters[key] ? 'default' : 'outline'}
+                      onClick={() => handleFilterChange(key, (!filters[key]))}
                     >
                       {label}
                     </Button>
@@ -297,18 +295,27 @@ export function SearchAndFilterBar({ StandaloneSearchBox, filters, setFilters, r
               <div className="flex items-center gap-2">
                 <Switch
                   id="hasPool"
-                  checked={filters.hasPool === "true"}
-                  onCheckedChange={(checked) => handleFilterChange('hasPool', checked.toString())}
+                  checked={filters.hasPool}
+                  onCheckedChange={(checked) => handleFilterChange('hasPool', checked)}
                 />
                 <Label htmlFor="hasPool">Has Pool</Label>
               </div>
               <div className="flex items-center gap-2">
                 <Switch
                   id="hasGarage"
-                  checked={filters.hasGarage === "true"}
-                  onCheckedChange={(checked) => handleFilterChange('hasGarage', checked.toString())}
+                  checked={filters.hasGarage}
+                  onCheckedChange={(checked) => handleFilterChange('hasGarage', checked)}
                 />
                 <Label htmlFor="hasGarage">Has Garage</Label>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Switch
+                  id="singleStory"
+                  checked={filters.singleStory}
+                  onCheckedChange={(checked) => handleFilterChange('singleStory', checked)}
+                />
+                <Label htmlFor="hasPool">Single Story</Label>
               </div>
               <div className="grid gap-2">
                 <Label>Days on Market</Label>
@@ -320,11 +327,15 @@ export function SearchAndFilterBar({ StandaloneSearchBox, filters, setFilters, r
                     <SelectValue placeholder="Any" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="0">Any</SelectItem>
+                    <SelectItem value="any">Any</SelectItem>
                     <SelectItem value="1">1 Day</SelectItem>
                     <SelectItem value="7">7 Days</SelectItem>
                     <SelectItem value="30">30 Days</SelectItem>
                     <SelectItem value="90">90 Days</SelectItem>
+                    <SelectItem value="6m">6 months</SelectItem>
+                    <SelectItem value="12m">12 months</SelectItem>
+                    <SelectItem value="24m">24 months</SelectItem>
+                    <SelectItem value="36m">36 months</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

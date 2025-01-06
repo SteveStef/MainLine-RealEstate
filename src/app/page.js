@@ -419,18 +419,24 @@ function SearchSection() {
 
   function handleSubmit(e) {
     e.preventDefault();
-
-    const query = new URLSearchParams({
-      loc: location,
-      type: propertyType,
-      minPrice: priceRange.min,
-      maxPrice: priceRange.max,
-      beds: bedrooms,
-      baths: bathrooms,
-      sqft: squareFootage,
+    const tmp = {
+      location: location,
+      price_min: priceRange.min,
+      price_max: priceRange.max,
+      bed_min: bedrooms,
+      baths_min: bathrooms,
+      sqft_min: squareFootage,
       status: status,
-    }).toString();
+    };
 
+    if(propertyType === "apartment") tmp.isApartment = "true";
+    else if(propertyType === "townhouse") tmp.isTownhouse = "true";
+    else if(propertyType === "lot/land") tmp.isLotLand= "true";
+    else if(propertyType === "singlefamily") tmp.isSingleFamily = "true";
+    else if(propertyType === "multifamily") tmp.isMultiFamily = "true";
+    else if(propertyType === "condo") tmp.isCondo = "true";
+
+    const query = new URLSearchParams({ tmp }).toString();
     router.push(`/properties?${query}`);
   }
 
@@ -544,7 +550,7 @@ function SearchSection() {
               </div>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Square Footage: {squareFootage.toLocaleString()}</label>
+              <label className="text-sm font-medium text-gray-700">Square Footage: {squareFootage.toLocaleString()} (minimum)</label>
               <Slider
                 value={[squareFootage]}
                 onValueChange={(val) => setSquareFootage(val[0])}
@@ -646,6 +652,40 @@ function InsightsAndMedia({ insightsAndMedia }) {
 }
 
 function ContactSection() {
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [message, setMessage] = useState("");
+  const [load, setLoad] = useState(false);
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    setLoad(true);
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/sendEmail`;
+      const options = {
+        method: "POST",
+        headers: {"Content-Type": 'application/json'},
+        body: JSON.stringify({ name, email, phone, message })
+      };
+      const data = await fetch(url, options);
+      if(!data.ok) {
+        console.log(data);
+        return;
+      } else {
+        console.log("email was sent");
+        setEmail("");
+        setName("");
+        setMessage("");
+        setPhone("");
+      }
+    } catch(err) {
+      console.log(err);
+    }
+    setLoad(false);
+  }
+
   return (
     <section id="contact" className="w-full py-12 px-4 md:px-6 bg-white">
       <div className="container px-4 md:px-6 mx-auto">
@@ -672,14 +712,15 @@ function ContactSection() {
               </CardHeader>
               <CardContent>
                 <form className="space-y-4">
-                  <Input placeholder="Your Name" type="text" />
-                  <Input placeholder="Your Email" type="email" />
-                  <Input placeholder="Your Phone" type="tel" />
+                  <Input onChange={(e) => setName(e.target.value)} placeholder="Your Name" type="text" />
+                  <Input onChange={(e) => setEmail(e.target.value)} placeholder="Your Email" type="email" />
+                  <Input onChange={(e) => setPhone(e.target.value)} placeholder="Your Phone" type="tel" />
                   <textarea
+                    onChange={(e) => setMessage(e.target.value)}
                     className="w-full h-24 px-3 py-2 text-base text-gray-900 border rounded-lg focus:shadow-outline resize-none"
                     placeholder="Your Message"
                   />
-                  <Button type="submit" className="w-full bg-primary text-white hover:bg-primary/90">
+                  <Button onClick={handleSubmit} disabled={load} type="submit" className="w-full bg-primary text-white hover:bg-primary/90">
                     <Mail className="h-4 w-4 mr-2" />
                     Send Message
                   </Button>
@@ -719,8 +760,8 @@ function ContactSection() {
   width="600"
   height="250"
   loading="lazy"
-  allowfullscreen
-  referrerpolicy="no-referrer-when-downgrade"
+  allowFullScreen
+  referrerPolicy="no-referrer-when-downgrade"
   src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&q=216+E+Lancaster+Ave,+Wayne,+PA+19087`}>
 </iframe>
                 </div>

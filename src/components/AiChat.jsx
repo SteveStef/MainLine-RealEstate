@@ -1,10 +1,10 @@
 'use client';
 
+import React, { useState, useRef, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MessageCircle, Send, Loader2 } from 'lucide-react';
-import { useState, useRef, useEffect } from "react";
+import { MessageCircle, Send, Loader2, Maximize2, Minimize2 } from 'lucide-react';
 
 export default function AIChatAssistant() {
   const [messages, setMessages] = useState([
@@ -13,8 +13,10 @@ export default function AIChatAssistant() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   const chatBoxRef = useRef(null);
+  console.log(messages);
 
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -41,12 +43,19 @@ export default function AIChatAssistant() {
 
     try {
       const url = `${process.env.NEXT_PUBLIC_API_URL}/getAIResponse`;
+      let msgs = "";
+      for(let i = 0; i < messages.length; i++) {
+        if(messages[i].role !== "user") continue;
+        msgs += `previous message ${i+1}: ${messages[i].content}\n`;
+      }
+      msgs += "current message: " + input;
+      console.log(msgs);
       const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ message: msgs }),
       });
 
       if (!response.ok) {
@@ -59,8 +68,8 @@ export default function AIChatAssistant() {
         const firstIndex = data.indexOf("|");
         const lastIndex = data.lastIndexOf("|");
         if (firstIndex !== lastIndex) {
-          const substring = data.substring(firstIndex + 1, lastIndex); // Extract between first and last '|'
-          data = data.slice(0, firstIndex) + " " + data.slice(lastIndex + 1); // Remove the original link text
+          const substring = data.substring(firstIndex + 1, lastIndex);
+          data = data.slice(0, firstIndex) + " " + data.slice(lastIndex + 1);
           setMessages(prevMessages => [
             ...prevMessages,
             { role: 'assistant', content: data, type: 'text' },
@@ -87,40 +96,86 @@ export default function AIChatAssistant() {
     }
   };
 
+  const toggleFullScreen = () => {
+    setIsFullScreen(!isFullScreen);
+    setIsExpanded(true);
+  };
+
+  const formatMessage = (content) => {
+    return content.split('\n').map((line, index, array) => {
+      const formattedLine = line.split(/(\*\*.*?\*\*)/).map((part, i) => {
+        if (part.startsWith('**') && part.endsWith('**')) {
+          return <strong key={i}>{part.slice(2, -2)}</strong>;
+        }
+        return part;
+      });
+
+      if (line.startsWith('**') && line.endsWith('**')) {
+        return (
+          <React.Fragment key={index}>
+            <h3 className="text-lg font-bold my-2">{line.slice(2, -2)}</h3>
+            {index < array.length - 1 && <hr className="my-2 border-t border-gray-200" />}
+          </React.Fragment>
+        );
+      }
+
+      return (
+        <React.Fragment key={index}>
+          <p>{formattedLine}</p>
+          {index < array.length - 1 && <hr className="my-2 border-t border-gray-200" />}
+        </React.Fragment>
+      );
+    });
+  };
+
   return (
-    <Card className={`w-full max-w-2xl mx-auto bg-white/90 backdrop-blur-sm transition-all duration-300 ${isExpanded ? 'h-[400px]' : 'h-[150px]'}`}>
-      <CardHeader>
+    <Card
+    className={`w-full mx-auto bg-white transition-all duration-300 flex flex-col ${
+      isFullScreen ? 'fixed inset-0 z-50 bg-white' :
+        isExpanded ? 'max-w-2xl h-[400px] bg-white/90 backdrop-blur-sm' :
+        'max-w-2xl h-[150px] bg-white/90 backdrop-blur-sm'
+    }`}
+    >
+      <CardHeader className="flex flex-row items-center justify-between flex-shrink-0">
         <CardTitle className="text-xl font-bold flex items-center">
           <MessageCircle className="h-6 w-6 mr-2" />
           Chat with our AI Real Estate Assistant
         </CardTitle>
+        <Button variant="ghost" size="icon" onClick={toggleFullScreen}>
+          {isFullScreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+        </Button>
       </CardHeader>
-      <CardContent className={`flex flex-col ${isExpanded ? 'h-[calc(100%-60px)]' : 'h-[50px]'}`}>
+      <CardContent className="flex-grow flex flex-col overflow-hidden">
         <div
           ref={chatBoxRef}
-          className={`overflow-auto mb-4 space-y-4 flex-grow ${isExpanded ? 'block' : 'hidden'}`}
+          className={`overflow-y-auto mb-4 space-y-4 flex-grow ${isExpanded ? 'block' : 'hidden'}`}
         >
           {messages.map((m, index) => (
-            <div key={index} className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`rounded-lg px-3 py-2 max-w-[80%] ${
-                m.role === 'user' 
-                  ? 'bg-primary text-primary-foreground' 
-                  : 'bg-muted text-left'
-              }`}>
-                {m.type === 'jsx' ? m.content : <span>{m.content}</span>}
+            <div key={index} className="w-full">
+              {m.role === 'user' && (
+                <div className="font-semibold text-sm text-gray-500 mb-1">You:</div>
+              )}
+              <div 
+                className={`rounded-lg px-4 py-2 w-full shadow-md ${
+                  m.role === 'user' 
+                    ? 'bg-primary text-primary-foreground' 
+                    : 'bg-muted text-foreground'
+                }`}
+              >
+                {m.type === 'jsx' ? m.content : formatMessage(m.content)}
               </div>
             </div>
           ))}
           {isLoading && (
-            <div className="flex justify-start">
-              <div className="rounded-lg px-3 py-2 bg-muted flex items-center space-x-2">
+            <div className="w-full">
+              <div className="rounded-lg px-4 py-2 bg-muted flex items-center space-x-2 shadow-md">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span>AI is typing...</span>
               </div>
             </div>
           )}
         </div>
-        <form onSubmit={handleSubmit} className="flex space-x-2">
+        <form onSubmit={handleSubmit} className="flex space-x-2 mt-auto p-1">
           <Input
             value={input}
             onChange={handleInputChange}
@@ -131,7 +186,7 @@ export default function AIChatAssistant() {
           />
           <Button type="submit" disabled={isLoading}>
             {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-            <span className="ml-2">{isLoading ? 'Sending...' : 'Send'}</span>
+            <span className="ml-2 hidden sm:inline">{isLoading ? 'Sending...' : 'Send'}</span>
           </Button>
         </form>
       </CardContent>

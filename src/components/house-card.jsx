@@ -8,7 +8,11 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { BedIcon, BathIcon, SquareIcon } from 'lucide-react'
 
+
 export function HouseCard({ house }) {
+  const address = `${house.streetAddress} ${house.city} ${house.state}`;
+  const formattedAddress = encodeURIComponent(address.trim());
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -61,7 +65,7 @@ export function HouseCard({ house }) {
           </div>
         </CardContent>
         <CardFooter className="bg-muted p-4">
-          <Link href={`/properties/${house.streetAddress}?city=${house.city}&state=${house.state}`} className="w-full">
+          <Link href={`/properties/${formattedAddress}`} className="w-full">
             <Button className="w-full">View Details</Button>
           </Link>
         </CardFooter>
