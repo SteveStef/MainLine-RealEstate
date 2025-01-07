@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowRightCircle, ArrowLeftCircle, Search, Newspaper, Phone, MapPin, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Info } from 'lucide-react';
+import {  MapPin, Phone, ArrowRightCircle, ArrowLeftCircle, Search, Newspaper, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Info } from 'lucide-react';
 import { AnimatePresence, motion } from "framer-motion";
 import { ImageSlideshow } from "../components/ImageSlideShow";
 import Background from "../realestate.jpg";
@@ -14,6 +14,8 @@ import { Slider } from "@/components/ui/slider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AIChatAssistant from "../components/AiChat";
+import { Textarea } from "@/components/ui/textarea"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 
 export default function LandingPage() {
@@ -652,38 +654,53 @@ function InsightsAndMedia({ insightsAndMedia }) {
 }
 
 function ContactSection() {
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [load, setLoad] = useState(false);
+  const [status, setStatus] = useState(null);
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {}
+    if (!name.trim()) newErrors.name = "Name is required"
+    if (!email.trim()) newErrors.email = "Email is required"
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Email is invalid"
+    if (!phone.trim()) newErrors.phone = "Phone is required"
+    else if (!/^\d{10}$/.test(phone.replace(/\D/g,''))) newErrors.phone = "Phone number is invalid"
+    if (!message.trim()) newErrors.message = "Message is required"
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
+  }
 
   async function handleSubmit(e) {
-    e.preventDefault();
-    setLoad(true);
+    e.preventDefault()
+    if (!validateForm()) return
+    setLoad(true)
+    setStatus(null)
     try {
-      const url = `${process.env.NEXT_PUBLIC_API_URL}/sendEmail`;
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/sendEmail`
       const options = {
         method: "POST",
         headers: {"Content-Type": 'application/json'},
         body: JSON.stringify({ name, email, phone, message })
-      };
-      const data = await fetch(url, options);
-      if(!data.ok) {
-        console.log(data);
-        return;
+      }
+      const response = await fetch(url, options)
+      if(!response.ok) {
+        throw new Error('Failed to send email')
       } else {
-        console.log("email was sent");
-        setEmail("");
-        setName("");
-        setMessage("");
-        setPhone("");
+        setStatus({ type: 'success', message: "Email was sent successfully!" })
+        setEmail("")
+        setName("")
+        setMessage("")
+        setPhone("")
       }
     } catch(err) {
-      console.log(err);
+      console.error(err)
+      setStatus({ type: 'error', message: "Failed to send email. Please try again." })
     }
-    setLoad(false);
+    setLoad(false)
   }
 
   return (
@@ -711,20 +728,56 @@ function ContactSection() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <form className="space-y-4">
-                  <Input onChange={(e) => setName(e.target.value)} placeholder="Your Name" type="text" />
-                  <Input onChange={(e) => setEmail(e.target.value)} placeholder="Your Email" type="email" />
-                  <Input onChange={(e) => setPhone(e.target.value)} placeholder="Your Phone" type="tel" />
-                  <textarea
-                    onChange={(e) => setMessage(e.target.value)}
-                    className="w-full h-24 px-3 py-2 text-base text-gray-900 border rounded-lg focus:shadow-outline resize-none"
-                    placeholder="Your Message"
-                  />
-                  <Button onClick={handleSubmit} disabled={load} type="submit" className="w-full bg-primary text-white hover:bg-primary/90">
+                <form className="space-y-4" onSubmit={handleSubmit}>
+                  <div>
+                    <Input 
+                      value={name} 
+                      onChange={(e) => setName(e.target.value)} 
+                      placeholder="Your Name" 
+                      type="text"
+                      className={errors.name ? "border-red-500" : ""}
+                    />
+                    {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
+                  </div>
+                  <div>
+                    <Input 
+                      value={email} 
+                      onChange={(e) => setEmail(e.target.value)} 
+                      placeholder="Your Email" 
+                      type="email"
+                      className={errors.email ? "border-red-500" : ""}
+                    />
+                    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+                  </div>
+                  <div>
+                    <Input 
+                      value={phone} 
+                      onChange={(e) => setPhone(e.target.value)} 
+                      placeholder="Your Phone" 
+                      type="tel"
+                      className={errors.phone ? "border-red-500" : ""}
+                    />
+                    {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
+                  </div>
+                  <div>
+                    <Textarea
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className={`w-full h-24 px-3 py-2 text-base text-gray-900 border rounded-lg focus:shadow-outline resize-none ${errors.message ? "border-red-500" : ""}`}
+                      placeholder="Your Message"
+                    />
+                    {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
+                  </div>
+                  <Button disabled={load} type="submit" className="w-full bg-primary text-white hover:bg-primary/90">
                     <Mail className="h-4 w-4 mr-2" />
-                    Send Message
+                    {load ? 'Sending...' : 'Send Message'}
                   </Button>
                 </form>
+                {status && (
+                  <Alert className={`mt-4 ${status.type === 'success' ? 'bg-green-100' : 'bg-red-100'}`}>
+                    <AlertDescription>{status.message}</AlertDescription>
+                  </Alert>
+                )}
               </CardContent>
             </Card>
           </motion.div>
@@ -756,14 +809,14 @@ function ContactSection() {
                   Mon-Fri: 9AM-5PM
                 </p>
                 <div className="mt-4">
-<iframe
-  width="600"
-  height="250"
-  loading="lazy"
-  allowFullScreen
-  referrerPolicy="no-referrer-when-downgrade"
-  src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&q=216+E+Lancaster+Ave,+Wayne,+PA+19087`}>
-</iframe>
+                  <iframe
+                    width="100%"
+                    height="250"
+                    loading="lazy"
+                    allowFullScreen
+                    referrerPolicy="no-referrer-when-downgrade"
+                    src={`https://www.google.com/maps/embed/v1/place?key=${process.env.NEXT_PUBLIC_GOOGLE_API_KEY}&q=216+E+Lancaster+Ave,+Wayne,+PA+19087`}>
+                  </iframe>
                 </div>
               </CardContent>
             </Card>

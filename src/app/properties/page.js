@@ -4,7 +4,7 @@ import { HouseCard } from '../../components/house-card';
 import { SearchAndFilterBar } from '@/components/search-and-filter-bar';
 import { useState, useEffect } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import { StandaloneSearchBox, useJsApiLoader, GoogleMap, Marker, InfoWindow} from "@react-google-maps/api";
 import React, {useRef} from "react";
 import Image from "next/image";
@@ -39,6 +39,7 @@ export default function HousesPage({ searchParams }) {
   const [hoveredHouse, setHoveredHouse] = useState(null);
   const hoverTimeoutRef = useRef(null); // Ref to track hover timeout
   const [isInfoWindowHovered, setIsInfoWindowHovered] = useState(false); // Track mouse over InfoWindow
+  const [load, setLoad] = useState(false);
   const router = useRouter();
 
   const [filters, setFilters] = useState({
@@ -79,15 +80,14 @@ export default function HousesPage({ searchParams }) {
 
   useEffect(() => {
     async function searchProperties() {
+      setLoad(true);
       try {
-        console.log("This function was called");
         let url = `${process.env.NEXT_PUBLIC_API_URL}/getPropertyByCity`;
         const options = { method: "POST", headers: { "Content-Type": 'application/json' }, body: JSON.stringify(filters) };
         const data = await fetch(url, options);
         if(data.ok) {
           const text = await data.text(); 
           const jsonRes = await JSON.parse(text);
-          console.log(jsonRes);
           if(jsonRes.results.error) setHouses([]);
           else if(jsonRes.results.length === 2 && jsonRes.results[1] === 200) {
             const formattedAddress = encodeURIComponent(filters.location.trim());
@@ -102,6 +102,7 @@ export default function HousesPage({ searchParams }) {
         console.log(err);
         setHouses([]);
       }
+      setLoad(false);
     }
     searchProperties();
   }, [requestToggle]);
@@ -115,23 +116,27 @@ export default function HousesPage({ searchParams }) {
               isLoaded &&
           <SearchAndFilterBar StandaloneSearchBox={StandaloneSearchBox} filters={filters} setFilters={setFilters} requestToggle={requestToggle} setRequestToggle={setRequestToggle} />
             }
-          <div className="mt-6">
-            {houses.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {houses.map((house, idx) => (
-                  <div key={idx}><HouseCard house={house} /></div>
-                ))}
-              </div>
-            ) : (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>No houses found</AlertTitle>
-                <AlertDescription>
-                  We couldn't find any houses matching your search criteria. Please try adjusting your filters.
-                </AlertDescription>
-              </Alert>
-            )}
-          </div>
+    <div className="mt-6">
+      {load ? (
+        <div className="flex justify-center items-center h-64">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : houses.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {houses.map((house) => (
+            <div key={house.id}><HouseCard house={house} /></div>
+          ))}
+        </div>
+      ) : (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>No houses found</AlertTitle>
+          <AlertDescription>
+            We couldn't find any houses matching your search criteria. Please try adjusting your filters.
+          </AlertDescription>
+        </Alert>
+      )}
+    </div>
         </div>
       </div>
       <div className="w-1/2 h-screen">
@@ -222,7 +227,8 @@ export default function HousesPage({ searchParams }) {
     }}
   />
   <div>
-    <Link href={`/properties/${house.streetAddress}`}>
+
+    <Link href={`/properties/${encodeURIComponent((`${house.streetAddress} ${house.city} ${house.state}`.trim()))}`}>
       <h3 className="font-bold text-blue-700">{house.streetAddress}</h3>
     </Link>
     <span>

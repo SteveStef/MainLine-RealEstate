@@ -1,37 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { 
-  DollarSign, 
-  Circle, 
-  HomeIcon, 
-  User, 
-  Mail, 
-  Phone, 
-  Send, 
-  Bed, 
-  Bath, 
-  Ruler, 
-  Calendar, 
-  Home, 
-  TreesIcon as Tree, 
-  Car, 
-  MapPin, 
-  Calculator, 
-  Warehouse, 
-  Thermometer, 
-  Wind, 
-  Droplet, 
-  Zap, 
-  Trees, 
-  Building, 
-  School, 
-  ParkingCircle, 
-  Key, 
-  HardHat, 
-  Hammer, 
-  Lightbulb, Footprints,Leaf,Mountain, Eye,Wifi,Trash2, Fence,Info, 
-} from 'lucide-react';
+import { X,
+  DollarSign, Circle, HomeIcon, User, Mail, Phone, Send, Bed, Bath, Ruler, Calendar, Home, TreesIcon as Tree, Car, MapPin, Calculator, Warehouse, Thermometer, Wind, Droplet, Zap, Trees, Building, School, ParkingCircle, Key, HardHat, Hammer, Lightbulb, Footprints,Leaf,Mountain, Eye,Wifi,Trash2, Fence,Info } from 'lucide-react';
 import Link from "next/link";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
@@ -39,6 +10,11 @@ import { Line, LineChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Responsi
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { ScrollArea } from "@/components/ui/scroll-area"
+
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 function sortAndSlice(list) {
   if(!list) return [];
@@ -123,21 +99,21 @@ export default function HouseDetails(props) {
 
 function ImageCollage({ images }) {
   const [showAll, setShowAll] = useState(false)
-  const len = images[0].mixedSources.jpeg.length - 1;
+  const len = images[0].mixedSources.jpeg.length - 1
 
   return (
     <div className="relative">
-      <div className="flex gap-2">
-        <div className="w-1/2">
+      <div className="flex flex-col sm:flex-row gap-2">
+        <div className="w-full sm:w-1/2">
           <Image 
             src={images[0].mixedSources.jpeg[len].url} 
             alt="Main property image" 
             width={800} 
             height={600} 
-            className="w-full h-[400px] object-cover rounded-lg"
+            className="w-full h-[200px] sm:h-[400px] object-cover rounded-lg"
           />
         </div>
-        <div className="w-1/2 grid grid-cols-2 gap-2">
+        <div className="w-full sm:w-1/2 grid grid-cols-2 gap-2 mt-2 sm:mt-0">
           {images.slice(1, 5).map((img, index) => (
             <Image 
               key={index} 
@@ -145,7 +121,7 @@ function ImageCollage({ images }) {
               alt={`Property image ${index + 2}`} 
               width={400} 
               height={300} 
-              className="w-full h-[196px] object-cover rounded-lg"
+              className="w-full h-[100px] sm:h-[196px] object-cover rounded-lg"
             />
           ))}
         </div>
@@ -153,7 +129,7 @@ function ImageCollage({ images }) {
       {!showAll && (
         <button 
           onClick={() => setShowAll(true)}
-          className="absolute bottom-4 right-4 bg-white text-gray-800 px-4 py-2 rounded-lg shadow-md hover:bg-gray-100 transition-colors"
+          className="absolute bottom-4 right-4 bg-white text-gray-800 px-4 py-2 rounded-lg shadow-md hover:bg-gray-100 transition-colors text-sm sm:text-base"
         >
           View More
         </button>
@@ -162,11 +138,12 @@ function ImageCollage({ images }) {
         <div className="fixed inset-0 bg-black bg-opacity-90 z-50 overflow-auto p-4">
           <button 
             onClick={() => setShowAll(false)}
-            className="absolute top-4 right-4 text-white text-2xl"
+            className="absolute top-4 right-4 text-white p-2"
+            aria-label="Close gallery"
           >
-            &times;
+            <X size={24} />
           </button>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-12">
             {images.map((img, index) => (
               <Image 
                 key={index} 
@@ -190,7 +167,8 @@ function PropertyInfo({ data }) {
 
   // Helper function to get the truncated description
   const getTruncatedDescription = () => {
-    const words = data.description.split(' ');
+    const words = data.description?.split(' ');
+    if(!words) return "";
     return words.length > wordLimit
       ? words.slice(0, wordLimit).join(' ') + '...'
       : data.description;
@@ -251,7 +229,7 @@ function PropertyInfo({ data }) {
       <p className="mb-6 text-gray-700 leading-relaxed">
         {isExpanded ? data.description : getTruncatedDescription()}
       </p>
-      {data.description.split(' ').length > wordLimit && (
+      {data.description?.split(' ').length > wordLimit && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="text-blue-500 font-semibold underline"
@@ -335,19 +313,19 @@ function NearbyAmenities({ amenities, schools, stats }) {
         <TableBody>
           <TableRow>
             <TableCell className="font-semibold text-gray-700">Fifteen Year Interest Rate</TableCell>
-            <TableCell>{(stats.mortgageRates.fifteenYearFixedRate).toFixed(2)}%</TableCell>
+            <TableCell>{(stats.mortgageRates?.fifteenYearFixedRate)?.toFixed(2)}%</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-semibold text-gray-700">Thirty Year Interest Rate</TableCell>
-            <TableCell>{stats.mortgageRates.thirtyYearFixedRate.toFixed(2)}%</TableCell>
+            <TableCell>{stats.mortgageRates?.thirtyYearFixedRate.toFixed(2)}%</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-semibold text-gray-700">Property Tax Rate</TableCell>
-            <TableCell>{stats.propertyTaxRate.toFixed(2)}%</TableCell>
+            <TableCell>{stats.propertyTaxRate?.toFixed(2)}%</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-semibold text-gray-700">HOA Monthly Fee</TableCell>
-            <TableCell>{stats.monthlyHoaFee?.toLocaleString() || "N/A"}</TableCell>
+            <TableCell>{stats.monthlyHoaFee?"$":""}{stats.monthlyHoaFee?.toLocaleString() || "N/A"}</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -626,21 +604,53 @@ function MonthlyCostCalculator({ price, taxRate }) {
 
 
 function ContactForm() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    message: ''
-  })
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
+  const [message, setMessage] = useState("")
+  const [load, setLoad] = useState(false)
+  const [status, setStatus] = useState(null)
+  const [errors, setErrors] = useState({})
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+  const validateForm = () => {
+    const newErrors = {}
+    if (!name.trim()) newErrors.name = "Name is required"
+    if (!email.trim()) newErrors.email = "Email is required"
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = "Email is invalid"
+    if (!phone.trim()) newErrors.phone = "Phone is required"
+    else if (!/^\d{10}$/.test(phone.replace(/\D/g,''))) newErrors.phone = "Phone number is invalid"
+    if (!message.trim()) newErrors.message = "Message is required"
+    setErrors(newErrors)
+    return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e) => {
+  async function handleSubmit(e) {
     e.preventDefault()
-    console.log('Form submitted:', formData)
-    setFormData({ name: '', email: '', phone: '', message: '' })
+    if (!validateForm()) return
+    setLoad(true)
+    setStatus(null)
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/sendEmail`
+      const options = {
+        method: "POST",
+        headers: {"Content-Type": 'application/json'},
+        body: JSON.stringify({ name, email, phone, message })
+      }
+      const response = await fetch(url, options)
+      if(!response.ok) {
+        throw new Error('Failed to send email')
+      } else {
+        setStatus({ type: 'success', message: "Email was sent successfully!" })
+        setEmail("")
+        setName("")
+        setMessage("")
+        setPhone("")
+      }
+    } catch(err) {
+      console.error(err)
+      setStatus({ type: 'error', message: "Failed to send email. Please try again." })
+    }
+    setLoad(false)
   }
 
   return (
@@ -654,65 +664,73 @@ function ContactForm() {
           <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
           <div className="relative">
             <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-            <input
+            <Input
               type="text"
               id="name"
               name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-              className="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className={`pl-10 ${errors.name ? "border-red-500" : ""}`}
             />
           </div>
+          {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
         </div>
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <div className="relative">
             <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-            <input
+            <Input
               type="email"
               id="email"
               name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
             />
           </div>
+          {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
         </div>
         <div>
           <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
           <div className="relative">
             <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
-            <input
+            <Input
               type="tel"
               id="phone"
               name="phone"
-              value={formData.phone}
-              onChange={handleChange}
-              className="pl-10 w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className={`pl-10 ${errors.phone ? "border-red-500" : ""}`}
             />
           </div>
+          {errors.phone && <p className="text-red-500 text-sm mt-1">{errors.phone}</p>}
         </div>
         <div>
           <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-          <textarea
+          <Textarea
             id="message"
             name="message"
-            value={formData.message}
-            onChange={handleChange}
-            rows="4"
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-black focus:ring-black"
-          ></textarea>
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={4}
+            className={errors.message ? "border-red-500" : ""}
+          />
+          {errors.message && <p className="text-red-500 text-sm mt-1">{errors.message}</p>}
         </div>
-        <button
+        <Button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-300 flex items-center justify-center"
+          disabled={load}
+          className="w-full bg-blue-500 text-white hover:bg-blue-600 transition duration-300"
         >
           <Send className="mr-2" size={18} />
-          Send Message
-        </button>
+          {load ? 'Sending...' : 'Send Message'}
+        </Button>
       </form>
+      {status && (
+        <Alert className={`mt-4 ${status.type === 'success' ? 'bg-green-100' : 'bg-red-100'}`}>
+          <AlertDescription>{status.message}</AlertDescription>
+        </Alert>
+      )}
     </div>
   )
 }
