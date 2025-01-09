@@ -16,7 +16,6 @@ export default function AIChatAssistant() {
   const [isFullScreen, setIsFullScreen] = useState(false);
 
   const chatBoxRef = useRef(null);
-  console.log(messages);
 
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -49,7 +48,6 @@ export default function AIChatAssistant() {
         msgs += `previous message ${i+1}: ${messages[i].content}\n`;
       }
       msgs += "current message: " + input;
-      console.log(msgs);
       const response = await fetch(url, {
         method: 'POST',
         headers: {

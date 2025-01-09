@@ -3,9 +3,9 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import Background from "../realestate.jpg";
-import Home2 from "../home2.jpg";
-import mainline from "../mainline.jpeg";
+import Background from "../images/realestate.jpg";
+import Home2 from "../images/home2.jpg";
+import mainline from "../images/mainline.jpeg";
 
 const images = [
   Background,

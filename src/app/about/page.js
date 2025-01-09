@@ -1,12 +1,13 @@
 "use client"
-import Image from 'next/image'
+import Image from 'next/image';
 import {  Building, ChartBar, Star, GraduationCap, Award, MapPin, Mail, Phone, Youtube, Users, TrendingUp, Home, Heart} from 'lucide-react';
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import prof from "../../pickle.jpg";
-import img from "../../home2.jpg";
+import { Textarea } from "@/components/ui/textarea";
+
+import prof from "../../images/pickle.jpg";
+import img from "../../images/home2.jpg";
 
 export default function AboutMe() {
   return (
@@ -170,32 +171,121 @@ export default function AboutMe() {
 
 
 
+
 function ContactForm() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: ''
+  })
+  const [formErrors, setFormErrors] = useState({})
   const [formStatus, setFormStatus] = useState('idle')
 
-  const handleSubmit = async (e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData(prev => ({ ...prev, [name]: value }))
+    if (formErrors[name]) {
+      setFormErrors(prev => ({ ...prev, [name]: undefined }))
+    }
+  }
+
+  const validateForm = () => {
+    const errors = {}
+    if (!formData.name.trim()) errors.name = 'Name is required'
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required'
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      errors.email = 'Email is invalid'
+    }
+    if (formData.phone && !/^\+?[1-9]\d{1,14}$/.test(formData.phone)) {
+      errors.phone = 'Phone number is invalid'
+    }
+    if (!formData.message.trim()) errors.message = 'Message is required'
+
+    setFormErrors(errors)
+    return Object.keys(errors).length === 0
+  }
+
+  async function handleSubmit(e) {
+    setFormStatus('submitting');
     e.preventDefault()
-    setFormStatus('submitting')
-    
-    // Simulate form submission
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    // For demonstration, we'll just set it to success
-    // In a real application, you'd handle the form submission here
-    setFormStatus('success')
+    if (!validateForm()) return
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/sendEmail`
+      const options = {
+        method: "POST",
+        headers: {"Content-Type": 'application/json'},
+        body: JSON.stringify(formData)
+      }
+      const response = await fetch(url, options)
+      if(!response.ok) {
+        throw new Error('Failed to send email')
+      } else {
+        setFormStatus('success');
+        setFormData({
+          name: '',
+          email: '',
+          phone: '',
+          message: ''
+        });
+      }
+    } catch(err) {
+      console.error(err)
+      setFormStatus('error');
+    }
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Input type="text" placeholder="Your Name" required />
-      <Input type="email" placeholder="Your Email" required />
-      <Input type="tel" placeholder="Your Phone" />
-      <Textarea placeholder="Your Message" required />
+      <div>
+        <Input
+          type="text"
+          name="name"
+          placeholder="Your Name"
+          value={formData.name}
+          onChange={handleChange}
+          className={formErrors.name ? 'border-red-500' : ''}
+        />
+        {formErrors.name && <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>}
+      </div>
+      <div>
+        <Input
+          type="email"
+          name="email"
+          placeholder="Your Email"
+          value={formData.email}
+          onChange={handleChange}
+          className={formErrors.email ? 'border-red-500' : ''}
+        />
+        {formErrors.email && <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>}
+      </div>
+      <div>
+        <Input
+          type="tel"
+          name="phone"
+          placeholder="Your Phone"
+          value={formData.phone}
+          onChange={handleChange}
+          className={formErrors.phone ? 'border-red-500' : ''}
+        />
+        {formErrors.phone && <p className="text-red-500 text-sm mt-1">{formErrors.phone}</p>}
+      </div>
+      <div>
+        <Textarea
+          name="message"
+          placeholder="Your Message"
+          value={formData.message}
+          onChange={handleChange}
+          className={formErrors.message ? 'border-red-500' : ''}
+        />
+        {formErrors.message && <p className="text-red-500 text-sm mt-1">{formErrors.message}</p>}
+      </div>
       <Button type="submit" disabled={formStatus === 'submitting'}>
         {formStatus === 'submitting' ? 'Sending...' : 'Send Message'}
       </Button>
       {formStatus === 'success' && (
-        <p className="text-green-600">Thank you for your message. I'll get back to you soon!</p>
+        <p className="text-green-600">Thank you for your message. We'll get back to you soon!</p>
       )}
       {formStatus === 'error' && (
         <p className="text-red-600">There was an error sending your message. Please try again.</p>
@@ -203,5 +293,6 @@ function ContactForm() {
     </form>
   )
 }
+
 
 

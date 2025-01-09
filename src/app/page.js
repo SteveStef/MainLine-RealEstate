@@ -5,7 +5,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import {  MapPin, Phone, ArrowRightCircle, ArrowLeftCircle, Search, Newspaper, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Info } from 'lucide-react';
 import { AnimatePresence, motion } from "framer-motion";
 import { ImageSlideshow } from "../components/ImageSlideShow";
-import Background from "../realestate.jpg";
 import Image from "next/image";
 import YouTube from "react-youtube";
 import {useState, useEffect } from "react";
@@ -16,7 +15,8 @@ import { useRouter } from "next/navigation";
 import AIChatAssistant from "../components/AiChat";
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-
+import Villanova from "../images/villanova.jpeg";
+import Background from "../images/realestate.jpg";
 
 export default function LandingPage() {
 
@@ -24,16 +24,18 @@ export default function LandingPage() {
   useEffect(() => {
     async function getFeatured() {
       try {
-        const url = `${process.env.NEXT_PUBLIC_API_URL}/getProperty?city=Villanova&state=PA`;
+        const url = `${process.env.NEXT_PUBLIC_API_URL}/getFeaturedListings`;
         const options = {method:"GET", headers: {"Content-Type": 'application/json'}};
-        //const data = await fetch(url, options);
-        //console.log(data);
-        // data.body is readable streams
+        const data = await fetch(url, options);
+        if(data.ok) {
+          const json = await JSON.parse(await data.text());
+          setFeatured(json);
+        }
       } catch(err) {
         console.log(err);
+        setFeatured([]);
       }
     }
-
     getFeatured();
   },[]);
 
@@ -41,8 +43,8 @@ export default function LandingPage() {
     { name: "Bryn Mawr", image: "https://photos.zillowstatic.com/fp/d190276102742d7b921353151816d82d-p_e.jpg" },
     { name: "Ardmore", image: Background  },
     { name: "Wayne", image: "https://photos.zillowstatic.com/fp/c0eed9e47ad141b82966658a00d05a3c-p_e.jpg" },
-    { name: "Villanova", image:  "https://photos.zillowstatic.com/fp/6559a8d8fcdb7e815053ed9a17bd267e-p_e.jpg"},
-    { name: "Gladwyne", image:  Background},
+    { name: "Villanova", image:  Villanova},
+    { name: "Gladwyne", image:  ""},
     { name: "Haverford", image: Background },
     { name: "Overbrook", image: Background },
     { name: "Merion", image: Background },
@@ -108,7 +110,7 @@ export default function LandingPage() {
         <HeroSection />
         <WhyChooseUs />
         <ExploreAreas mainLineAreas={mainLineAreas} />
-        <FeaturedProperties />
+        <FeaturedProperties properties={featured} />
         <SearchSection />
         <InsightsAndMedia insightsAndMedia={insightsAndMedia} />
         <ContactSection />
@@ -152,7 +154,7 @@ function HeroSection() {
   )
 }
 
-function FeaturedProperties() {
+function FeaturedProperties({ properties }) {
   return (
     <section id="properties" className="w-full py-12 px-4 md:px-6">
       <div className="container px-4 md:px-6 mx-auto">
@@ -165,12 +167,12 @@ function FeaturedProperties() {
           Featured Properties
         </motion.h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
+          {properties.map((property, idx) => (
             <motion.div
-              key={i}
+              key={idx}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
+              transition={{ duration: 0.5, delay: idx * 0.1 }}
               whileHover={{ scale: 1.03 }}
               className="transform transition duration-300 hover:shadow-xl"
             >
@@ -180,7 +182,7 @@ function FeaturedProperties() {
                     alt="Property Image"
                     className="w-full h-48 object-cover"
                     height="200"
-                    src={Background}
+                    src={property?.responsivePhotosOriginalRatio[0]?.mixedSources?.jpeg[0]?.url || ""}
                     style={{
                       aspectRatio: "300/200",
                       objectFit: "cover",
@@ -191,17 +193,19 @@ function FeaturedProperties() {
                 <CardContent className="p-4">
                   <CardTitle className="flex items-center mb-2 text-lg">
                     <MapPin className="h-5 w-5 mr-2 text-primary" />
-                    Beautiful Home in Bryn Mawr
+                    {property.address.streetAddress}, {property.address.city} {property.address.state}
                   </CardTitle>
                   <div className="flex justify-between items-center text-sm text-gray-600 mb-2">
-                    <span className="flex items-center"><Bed className="h-4 w-4 mr-1" /> 4 bed</span>
-                    <span className="flex items-center"><Bath className="h-4 w-4 mr-1" /> 3 bath</span>
-                    <span className="flex items-center"><ArrowRight className="h-4 w-4 mr-1" /> 2,500 sqft</span>
+                    <span className="flex items-center"><Bed className="h-4 w-4 mr-1" /> {property.bedrooms} bed</span>
+                    <span className="flex items-center"><Bath className="h-4 w-4 mr-1" /> {property.bathrooms} bath</span>
+                    <span className="flex items-center"><ArrowRight className="h-4 w-4 mr-1" /> {property.livingArea?.toLocaleString()} sqft</span>
                   </div>
                   <p className="font-bold text-xl flex items-center mb-2">
-                    <DollarSign className="h-5 w-5 mr-1 text-primary" />750,000
+                    <DollarSign className="h-5 w-5 mr-1 text-primary" />{property.price?.toLocaleString()}
                   </p>
+                  <Link href={`properties/${property.streetAddress}`}>
                   <Button className="w-full" variant="outline">View Details</Button>
+                  </Link>
                 </CardContent>
               </Card>
             </motion.div>
@@ -431,14 +435,14 @@ function SearchSection() {
       status: status,
     };
 
-    if(propertyType === "apartment") tmp.isApartment = "true";
-    else if(propertyType === "townhouse") tmp.isTownhouse = "true";
-    else if(propertyType === "lot/land") tmp.isLotLand= "true";
-    else if(propertyType === "singlefamily") tmp.isSingleFamily = "true";
-    else if(propertyType === "multifamily") tmp.isMultiFamily = "true";
-    else if(propertyType === "condo") tmp.isCondo = "true";
+    if(propertyType === "apartment") tmp.isApartment = true;
+    else if(propertyType === "townhouse") tmp.isTownhouse = true;
+    else if(propertyType === "lot/land") tmp.isLotLand= true;
+    else if(propertyType === "singlefamily") tmp.isSingleFamily = true;
+    else if(propertyType === "multifamily") tmp.isMultiFamily = true;
+    else if(propertyType === "condo") tmp.isCondo = true;
 
-    const query = new URLSearchParams({ tmp }).toString();
+    const query = new URLSearchParams(tmp).toString();
     router.push(`/properties?${query}`);
   }
 
@@ -572,7 +576,7 @@ function SearchSection() {
                   <SelectValue placeholder="Select Status" />
                 </SelectTrigger>
                 <SelectContent>
-                  {['For Sale', 'For Rent', 'Recently Sold'].map((st) => (
+                  {['forSale', 'forRent', 'recentlySold'].map((st) => (
                     <SelectItem key={st} value={st}>{st}</SelectItem>
                   ))}
                 </SelectContent>
