@@ -11,6 +11,8 @@ import getPlaceInfoByName from "../info.js";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import Header from "@/components/Header.jsx";
+import { ResponsiveContainer } from 'recharts';
 
 const MotionCard = motion(Card);
 
@@ -93,6 +95,10 @@ export default function MainLineDetails({params}) {
   }
 
   return (
+    <>
+    <Header />
+    <br></br>
+    <br></br>
     <section className="w-full py-12 px-4 md:px-6 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto">
         <motion.h2 
@@ -268,7 +274,7 @@ export default function MainLineDetails({params}) {
               <div className="flex flex-col space-y-4 mb-6">
                 <h3 className="text-2xl font-semibold flex items-center">
                   <Search className="mr-2 text-primary" />
-    Explore Nearby Places in {name.replace("%20"," ")}
+                  Explore Nearby Places in {name.replace("%20"," ")}
                 </h3>
                 <div className="relative" ref={dropdownRef}>
                   <form onSubmit={(e) => {
@@ -331,30 +337,7 @@ export default function MainLineDetails({params}) {
                 animate="animate"
               >
                 {filteredItems.map((item) => (
-                  <MotionCard 
-                    key={item.name} 
-                    className="hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-                    variants={popIn}
-                  >
-                    <CardContent className="p-4">
-                      <h4 className="font-semibold text-lg mb-1">{item.name}</h4>
-                      <p className="text-sm text-gray-600 mb-2">{item.address}</p>
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center bg-green-100 px-2 py-1 rounded">
-                          <Star className="h-4 w-4 text-green-500 mr-1" />
-                          <span className="font-bold text-green-700">{item.rating}</span>
-                        </div>
-                        <span className="text-sm text-gray-600">{item.user_ratings_total} reviews</span>
-                        <span className="text-sm text-gray-600">{item.vicinity} reviews</span>
-                      </div>
-                      {item.priceLevel && (
-                        <div className="mt-2 flex justify-between items-center">
-                          <span className="text-sm font-medium text-gray-500">{renderPricing(item.price_level)}</span>
-                          <span className="text-sm text-gray-600">{item.cuisine}</span>
-                        </div>
-                      )}
-                    </CardContent>
-                  </MotionCard>
+                  <RestaurantCard item={item}/>
                 ))}
               </motion.div>
             </motion.div>
@@ -362,6 +345,7 @@ export default function MainLineDetails({params}) {
         </MotionCard>
       </div>
     </section>
+    </>
   );
 }
 
@@ -386,3 +370,43 @@ const popIn= {
   transition: { type: 'spring', stiffness: 300, damping: 10 }
 };
 
+
+const renderPricing = (priceLevel) => {
+  return Array(priceLevel)
+    .fill(0)
+    .map((_, index) => (
+      <DollarSign key={index} className="h-4 w-4 text-green-500 inline-block" />
+    ))
+}
+
+function RestaurantCard({ item }) {
+  return (
+    <motion.div
+      variants={popIn}
+      initial="hidden"
+      animate="visible"
+    >
+      <Card className="hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+        <CardContent className="p-4">
+          <h4 className="font-semibold text-lg mb-1">{item.name}</h4>
+          <p className="text-sm text-gray-600 mb-2">{item.address}</p>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center bg-green-100 px-2 py-1 rounded">
+              <Star className="h-4 w-4 text-green-500 mr-1" />
+              <span className="font-bold text-green-700">{item.rating}</span>
+            </div>
+            <span className="text-sm text-gray-600">{item.user_ratings_total} reviews</span>
+          </div>
+          {item.price_level ? (
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-medium text-gray-500">
+                {renderPricing(item.price_level)}
+              </span>
+            </div> 
+          ):<DollarSign className="h-4 w-4 text-green-500 inline-block" />
+          }
+        </CardContent>
+      </Card>
+    </motion.div>
+  )
+}

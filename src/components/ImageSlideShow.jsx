@@ -21,11 +21,11 @@ export function ImageSlideshow() {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length)
     }, 5000)
 
-    return () => clearInterval(timer)
-  }, [])
+    return () => clearInterval(timer);
+  }, []);
 
   return (
-    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[650px] overflow-hidden">
+    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[750px] overflow-hidden">
       <AnimatePresence initial={false}>
         <motion.div
           key={currentIndex}

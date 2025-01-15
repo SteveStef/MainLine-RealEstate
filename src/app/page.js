@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import {  MapPin, Phone, ArrowRightCircle, ArrowLeftCircle, Search, Newspaper, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Info } from 'lucide-react';
+import { MapPin, Phone, ArrowRightCircle, ArrowLeftCircle, Search, Newspaper, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Info } from 'lucide-react';
 import { AnimatePresence, motion } from "framer-motion";
 import { ImageSlideshow } from "../components/ImageSlideShow";
 import Image from "next/image";
@@ -13,6 +13,7 @@ import { Slider } from "@/components/ui/slider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import AIChatAssistant from "../components/AiChat";
+import Header from "../components/Header.jsx";
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import Villanova from "../images/villanova.jpeg";
@@ -107,6 +108,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-white to-gray-100 text-gray-900">
       <main className="flex-1">
+        <Header />
         <HeroSection />
         <WhyChooseUs />
         <ExploreAreas mainLineAreas={mainLineAreas} />

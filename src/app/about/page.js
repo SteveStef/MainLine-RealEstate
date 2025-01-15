@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
+import Header from "@/components/Header.jsx";
 
 import prof from "../../images/pickle.jpg";
 import img from "../../images/home2.jpg";
@@ -12,6 +13,10 @@ import img from "../../images/home2.jpg";
 export default function AboutMe() {
   return (
     <div className="min-h-screen bg-gray-100">
+    <Header />
+    <br></br>
+    <br></br>
+    <br></br>
       <main className="container mx-auto px-4 py-8">
         <div className="bg-white shadow-xl rounded-lg overflow-hidden">
           <div className="relative h-64 sm:h-80">

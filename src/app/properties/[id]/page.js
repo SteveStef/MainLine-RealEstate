@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+import Header from "@/components/Header.jsx";
 
 function sortAndSlice(list) {
   if(!list) return [];
@@ -63,6 +64,10 @@ export default function HouseDetails(props) {
 
   return (
     <>
+    <Header />
+    <br></br>
+    <br></br>
+    <br></br>
       {houseData ? (
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-4xl font-bold mb-6 text-gray-800">{address}</h1>
@@ -177,11 +182,11 @@ function PropertyInfo({ data }) {
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-8">
 <h2 className="text-3xl font-bold mb-4 text-black font-sans relative">
-  ${data.price.toLocaleString()}
+  ${data.price.toLocaleString()}<span className="text-2xl">{data.homeStatus === "FOR_RENT" && "/MO"}</span>
   <span
     className="absolute ml-2 text-sm text-gray-600 bg-gray-100 px-3 py-2 rounded-full"
   >
-    {data.homeStatus.replace("_", " ")}
+    {data.homeStatus.replace("_", " ")} 
   </span>
 </h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

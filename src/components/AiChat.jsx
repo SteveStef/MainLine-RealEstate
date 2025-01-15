@@ -127,13 +127,15 @@ export default function AIChatAssistant() {
   };
 
   return (
-    <Card
-    className={`w-full mx-auto bg-white transition-all duration-300 flex flex-col ${
-      isFullScreen ? 'fixed inset-0 z-50 bg-white' :
-        isExpanded ? 'max-w-2xl h-[400px] bg-white/90 backdrop-blur-sm' :
-        'max-w-2xl h-[150px] bg-white/90 backdrop-blur-sm'
-    }`}
-    >
+<Card
+  className={`mx-auto bg-white transition-all duration-300 flex flex-col ${
+    isFullScreen
+      ? 'fixed inset-0 z-50 bg-white max-w-[50%] h-full'
+      : isExpanded
+      ? 'max-w-2xl h-[400px] bg-white/90 backdrop-blur-sm'
+      : 'max-w-2xl h-[150px] bg-white/90 backdrop-blur-sm'
+  }`}
+>
       <CardHeader className="flex flex-row items-center justify-between flex-shrink-0">
         <CardTitle className="text-xl font-bold flex items-center">
           <MessageCircle className="h-6 w-6 mr-2" />
@@ -153,20 +155,21 @@ export default function AIChatAssistant() {
               {m.role === 'user' && (
                 <div className="font-semibold text-sm text-gray-500 mb-1">You:</div>
               )}
-              <div 
-                className={`rounded-lg px-4 py-2 w-full shadow-md ${
-                  m.role === 'user' 
-                    ? 'bg-primary text-primary-foreground' 
-                    : 'bg-muted text-foreground'
-                }`}
-              >
-                {m.type === 'jsx' ? m.content : formatMessage(m.content)}
-              </div>
+<div
+  key={index}
+  className={`inline-block max-w-[80%] break-words rounded-lg px-4 py-2 shadow-md ${
+    m.role === 'user'
+      ? 'bg-primary text-primary-foreground self-end'
+      : 'bg-muted text-foreground self-start'
+  }`}
+>
+  {m.type === 'jsx' ? m.content : formatMessage(m.content)}
+</div>
             </div>
           ))}
           {isLoading && (
             <div className="w-full">
-              <div className="rounded-lg px-4 py-2 bg-muted flex items-center space-x-2 shadow-md">
+              <div className="max-w-[80%] rounded-lg px-4 py-2 bg-muted flex items-center space-x-2 shadow-md">
                 <Loader2 className="h-4 w-4 animate-spin" />
                 <span>AI is typing...</span>
               </div>
