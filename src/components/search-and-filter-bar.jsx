@@ -19,19 +19,43 @@ import {
 } from '@/components/ui/sheet';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 import { Search } from 'lucide-react';
 import { Slider } from "@/components/ui/slider";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export function SearchAndFilterBar({ StandaloneSearchBox, filters, setFilters, requestToggle, setRequestToggle }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const updateQueryParam = (key, value) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (value) {
+      params.set(key, value);
+    } else {
+      params.delete(key);
+    }
+
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
+
   const handleFilterChange = (key, value) => {
-    if(value === "true") value = true;
     setFilters((prev) => ({ ...prev, [key]: value }));
+
+    if (key !== "location") {
+      setRequestToggle(!requestToggle);
+    }
+
   };
 
   const handleSearch = () => {
     setRequestToggle(!requestToggle);
   };
+
+  useEffect(() => {
+    updateQueryParam("location", filters.location);
+  },[filters.location])
 
   const searchBoxRef = useRef(null);
 
@@ -49,6 +73,8 @@ export function SearchAndFilterBar({ StandaloneSearchBox, filters, setFilters, r
             const places = searchBoxRef.current.getPlaces();
             if (places && places.length > 0) {
               const location = places[0].formatted_address;
+              console.log(location)
+              updateQueryParam("location", location);
               handleFilterChange('location', location);
               handleSearch();
             }
@@ -340,7 +366,6 @@ export function SearchAndFilterBar({ StandaloneSearchBox, filters, setFilters, r
                 </Select>
               </div>
             </div>
-            <Button onClick={handleSearch}>Apply Filters</Button>
           </SheetContent>
         </Sheet>
       </div>

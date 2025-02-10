@@ -640,12 +640,6 @@ function InsightsAndMedia({ insightsAndMedia }) {
                       </div>
                       <CardDescription>{item.description}</CardDescription>
                       <div className="flex justify-between items-center mt-4 text-sm text-gray-500">
-                        <span className="flex items-center">
-                          <Eye className="h-4 w-4 mr-1" /> {item.views} views
-                        </span>
-                        <span className="flex items-center">
-                          <Calendar className="h-4 w-4 mr-1" /> {item.uploadDate}
-                        </span>
                       </div>
                     </>
                   )}
