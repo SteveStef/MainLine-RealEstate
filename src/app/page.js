@@ -16,8 +16,23 @@ import AIChatAssistant from "../components/AiChat";
 import Header from "../components/Header.jsx";
 import { Textarea } from "@/components/ui/textarea"
 import { Alert, AlertDescription } from "@/components/ui/alert"
+
 import Villanova from "../images/villanova.jpeg";
-import Background from "../images/realestate.jpg";
+import Brynmar from "../images/MainLineImages/BrynMawr/XbhVxO6z1uEUjdaW.jpg";
+import Ardmore from "../images/MainLineImages/ardmore/Suburban-Square-Ardmore-outdoor-scene-R.Kennedy-forVP-2200x1237.jpg";
+import Wayne from "../images/MainLineImages/Wayne/eagle-village-shops.jpg";
+import Gladwyne from "../images/MainLineImages/gladwyne/1200px-Gladwyne_HD_1_Guard_House.jpg";
+import Haverford from "../images/MainLineImages/haverford/PA-02-MO6-001.jpg";
+import Merion from "../images/MainLineImages/Merion/Merion_Station_Pennsylvania.jpg";
+import Narberth from "../images/MainLineImages/narberth/Narberth_74379712-708f-49b3-9765-493c7e06ed8b.jpg";
+import StDavid from "../images/MainLineImages/st davids/eagle-village-shops.jpg";
+import Rosemont from "../images/MainLineImages/rosemont/rosemontsquare01.jpg";
+import Wynnewood from "../images/MainLineImages/wynnewood/original-d7b6d5731df6ec2b26b6d3bfa58a82d6.png";
+import Strafford from "../images/MainLineImages/straford/Strafford_Pennsylvania_Train_Station.jpg";
+import Devon from "../images/MainLineImages/Devon/2trp8826jpg_large.jpg";
+import Paoli from "../images/MainLineImages/paoli/0016Paoli-scaled.jpg";
+import Malvern from "../images/MainLineImages/Malvern/dsc02762.jpg";
+import Radnor from "../images/MainLineImages/radnor/150Radnor_Exterior139.jpg";
 
 export default function LandingPage() {
 
@@ -41,23 +56,22 @@ export default function LandingPage() {
   },[]);
 
   const mainLineAreas = [
-    { name: "Bryn Mawr", image: "https://photos.zillowstatic.com/fp/d190276102742d7b921353151816d82d-p_e.jpg" },
-    { name: "Ardmore", image: Background  },
-    { name: "Wayne", image: "https://photos.zillowstatic.com/fp/c0eed9e47ad141b82966658a00d05a3c-p_e.jpg" },
-    { name: "Villanova", image:  Villanova},
-    { name: "Gladwyne", image:  ""},
-    { name: "Haverford", image: Background },
-    { name: "Overbrook", image: Background },
-    { name: "Merion", image: Background },
-    { name: "Narberth", image: Background },
-    { name: "Wynnewood", image: Background },
-    { name: "Rosemont", image: Background },
-    { name: "St. Davids", image: Background },
-    { name: "Strafford", image: Background },
-    { name: "Devon", image: Background },
-    { name: "Daylesford", image: Background },
-    { name: "Paoli", image: Background },
-    { name: "Malvern", image: Background },
+    { name: "Bryn Mawr", image: Brynmar },
+    { name: "Radnor", image: Radnor },
+    { name: "Ardmore", image: Ardmore },
+    { name: "Wayne", image: Wayne },
+    { name: "Villanova", image:  Villanova },
+    { name: "Gladwyne", image:  Gladwyne },
+    { name: "Haverford", image: Haverford },
+    { name: "Merion", image: Merion },
+    { name: "Narberth", image: Narberth },
+    { name: "Wynnewood", image: Wynnewood },
+    { name: "Rosemont", image: Rosemont },
+    { name: "St. Davids", image: StDavid },
+    { name: "Strafford", image: Strafford },
+    { name: "Devon", image: Devon },
+    { name: "Paoli", image: Paoli },
+    { name: "Malvern", image: Malvern },
   ];
 
   const insightsAndMedia = [

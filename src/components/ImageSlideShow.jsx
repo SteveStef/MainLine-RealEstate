@@ -3,14 +3,14 @@
 import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
-import Background from "../images/realestate.jpg";
-import Home2 from "../images/home2.jpg";
-import mainline from "../images/mainline.jpeg";
+import R3 from "../images/rei6.jpg";
+import R4 from "../images/rei4.jpg";
+import R5 from "../images/rei5.jpg";
 
 const images = [
-  Background,
-  Home2,
-  Background,
+  R3,
+  R4,
+  R5,
 ]
 
 export function ImageSlideshow() {
@@ -25,7 +25,7 @@ export function ImageSlideshow() {
   }, []);
 
   return (
-    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[750px] overflow-hidden">
+    <div className="relative w-full h-[300px] md:h-[400px] lg:h-[760px] overflow-hidden">
       <AnimatePresence initial={false}>
         <motion.div
           key={currentIndex}

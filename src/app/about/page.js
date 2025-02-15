@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header.jsx";
 
 import prof from "../../images/pickle.jpg";
-import img from "../../images/home2.jpg";
+import img from "../../images/rei2.jpg";
 
 export default function AboutMe() {
   return (

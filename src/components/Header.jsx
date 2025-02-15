@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Crown } from 'lucide-react'
+import { Home } from 'lucide-react'
 
 export default function Header() {
   const [isVisible, setIsVisible] = useState(true)
@@ -37,7 +37,7 @@ export default function Header() {
   <div className="container mx-auto px-4">
     <div className="flex items-center justify-between">
       <Link href="/" className="flex items-center space-x-2">
-        <Crown className="h-8 w-8 text-black" />
+        <Home className="h-8 w-8 text-black" />
         <span className="text-2xl font-bold text-black">Main Line Estate</span>
       </Link>
       <nav className="hidden md:flex space-x-8">
