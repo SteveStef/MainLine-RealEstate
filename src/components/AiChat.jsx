@@ -23,6 +23,19 @@ export default function AIChatAssistant() {
     }
   }, [messages]);
 
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  },[]);
+  console.log(isMobile);
+
   const handleInputChange = (e) => {
     setInput(e.target.value);
   };
@@ -129,8 +142,10 @@ export default function AIChatAssistant() {
   return (
 <Card
   className={`mx-auto bg-white transition-all duration-300 flex flex-col ${
-    isFullScreen
+    isFullScreen && !isMobile
       ? 'absolute top-20 left-1/2 transform -translate-x-1/2 w-[50%] h-[83%] bg-white z-50'
+      : isFullScreen && isMobile
+      ? 'absolute top-20 left-1/2 transform -translate-x-1/2 w-[80%] h-[83%] bg-white z-50'
       : isExpanded
       ? 'max-w-2xl h-[300px] bg-white/90 backdrop-blur-sm'
       : 'max-w-2xl h-[150px] bg-white/90 backdrop-blur-sm'
@@ -139,7 +154,7 @@ export default function AIChatAssistant() {
       <CardHeader className="flex flex-row items-center justify-between flex-shrink-0">
         <CardTitle className="text-xl font-bold flex items-center">
           <MessageCircle className="h-6 w-6 mr-2" />
-          Chat with our AI Real Estate Assistant
+          Chat with our Real Estate Assistant
         </CardTitle>
         <Button variant="ghost" size="icon" onClick={toggleFullScreen}>
           {isFullScreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
@@ -180,7 +195,7 @@ export default function AIChatAssistant() {
           <Input
             value={input}
             onChange={handleInputChange}
-            placeholder="I am looking for a two bedroom apartment in Villanova."
+            placeholder="e.g. Two bedroom house in Villanova PA."
             className="flex-grow"
             disabled={isLoading}
             autoFocus

@@ -2,12 +2,12 @@
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { MapPin, Phone, ArrowRightCircle, ArrowLeftCircle, Search, Newspaper, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Calendar, Home, Users, Award, Info } from 'lucide-react';
+import { MapPin, Phone, ArrowRightCircle, ArrowLeftCircle, Search, Newspaper, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Home, Users, Award, Info } from 'lucide-react';
 import { AnimatePresence, motion } from "framer-motion";
 import { ImageSlideshow } from "../components/ImageSlideShow";
 import Image from "next/image";
 import YouTube from "react-youtube";
-import {useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import Link from "next/link";
@@ -54,6 +54,7 @@ export default function LandingPage() {
     }
     getFeatured();
   },[]);
+
 
   const mainLineAreas = [
     { name: "Bryn Mawr", image: Brynmar },
