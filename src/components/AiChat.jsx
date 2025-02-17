@@ -130,9 +130,9 @@ export default function AIChatAssistant() {
 <Card
   className={`mx-auto bg-white transition-all duration-300 flex flex-col ${
     isFullScreen
-      ? 'fixed inset-0 z-50 bg-white max-w-[50%] h-full'
+      ? 'absolute top-20 left-1/2 transform -translate-x-1/2 w-[50%] h-[83%] bg-white z-50'
       : isExpanded
-      ? 'max-w-2xl h-[400px] bg-white/90 backdrop-blur-sm'
+      ? 'max-w-2xl h-[300px] bg-white/90 backdrop-blur-sm'
       : 'max-w-2xl h-[150px] bg-white/90 backdrop-blur-sm'
   }`}
 >

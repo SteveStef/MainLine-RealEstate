@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,13 +12,22 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // In a real application, you would verify this against a secure backend
-    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
-      setIsAuthenticated(true);
-      setError('');
-    } else {
+    const url = `${process.env.NEXT_PUBLIC_API_URL}/auth`;
+    const options = { method: "POST", body: JSON.stringify({password}) };
+    try {
+      const res = await fetch(url, options);
+      console.log(res);
+      if(!res.ok) {
+        setIsAuthenticated(false);
+        setError('Invalid password');
+      } else {
+        setIsAuthenticated(true);
+        setError('');
+      }
+    } catch(err) {
+      setIsAuthenticated(false);
       setError('Invalid password');
     }
   };
@@ -88,6 +97,7 @@ function EditListingForm({ password }) {
     }
 
     try {
+      console.log(password);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/updateFeaturedListings?listing=${idx}&address=${address}`, {
         method: 'GET',
         headers: {
