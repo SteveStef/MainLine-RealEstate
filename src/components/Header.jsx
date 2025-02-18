@@ -87,8 +87,8 @@ export default function Header() {
       {isMobileMenuOpen && (
         <div className="sm:hidden" id="mobile-menu">
           <div className="pt-2 pb-3 space-y-1">
-            <MobileNavLink href="/listings" text="Properties" />
-            <MobileNavLink href="/neighborhoods" text="Blogs/Videos" />
+            <MobileNavLink href="/properties" text="Properties" />
+            <MobileNavLink href="/media" text="Blogs/Videos" />
             <MobileNavLink href="/about" text="About Us" />
           </div>
           <div className="pt-4 pb-3 border-t border-gray-200">
