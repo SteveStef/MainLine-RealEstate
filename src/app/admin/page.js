@@ -18,7 +18,6 @@ export default function AdminPage() {
     const options = { method: "POST", body: JSON.stringify({password}) };
     try {
       const res = await fetch(url, options);
-      console.log(res);
       if(!res.ok) {
         setIsAuthenticated(false);
         setError('Invalid password');

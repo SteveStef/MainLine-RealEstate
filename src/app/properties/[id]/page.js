@@ -50,7 +50,6 @@ export default function HouseDetails(props) {
         }
         const text = await data.text(); 
         const jsonRes = await JSON.parse(text);
-        console.log(jsonRes)
         setHouseData(jsonRes);
       } catch(err) {
         console.log(err);
@@ -322,7 +321,7 @@ function NearbyAmenities({ amenities, schools, stats }) {
           </TableRow>
           <TableRow>
             <TableCell className="font-semibold text-gray-700">Thirty Year Interest Rate</TableCell>
-            <TableCell>{stats.mortgageRates?.thirtyYearFixedRate.toFixed(2)}%</TableCell>
+            <TableCell>{stats.mortgageRates?.thirtyYearFixedRate?.toFixed(2)}%</TableCell>
           </TableRow>
           <TableRow>
             <TableCell className="font-semibold text-gray-700">Property Tax Rate</TableCell>

@@ -39,7 +39,6 @@ export default function MainLineDetails({params}) {
       try {
         const rad = milesToMeters(2);
         let url = `${process.env.NEXT_PUBLIC_API_URL}/getNearbyPlaces?area=${(name.replace("%20","").toLowerCase())}&keyword=${searchQuery}&radius=${parseInt(rad)}`;
-        console.log(url);
         const options = {method: "GET"};
         const response = await fetch(url, options);
         const txt = await response.text();
@@ -80,12 +79,10 @@ export default function MainLineDetails({params}) {
     try {
       const rad = milesToMeters(searchRadius);
       let url = `${process.env.NEXT_PUBLIC_API_URL}/getNearbyPlaces?area=${(name.replace("%20","").toLowerCase())}&keyword=${searchQuery}&radius=${parseInt(rad)}`;
-      console.log(url);
       const options = {method: "GET"};
       const response = await fetch(url, options);
       const txt = await response.text();
       const json = await JSON.parse(txt);
-      console.log(json);
       setFilteredItems(json.results);
       setIsDropdownOpen(false);
     } catch(err) {

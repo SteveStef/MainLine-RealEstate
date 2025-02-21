@@ -22,6 +22,23 @@ const center = {
   lng: -75.3499,
 }
 
+
+function useDebounce(value, delay = 500) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [JSON.stringify(value), delay]); // Ensure deep comparison
+
+  return debouncedValue;
+}
+
 export default function HousesPage({ searchParams }) {
   const { isLoaded } = useJsApiLoader({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_API_KEY,
@@ -77,6 +94,8 @@ export default function HousesPage({ searchParams }) {
     lotSize_max: searchParams?.lotSize_max || ""
   });
 
+  const debouncedFilter = useDebounce(filters, 500);
+
   useEffect(() => {
     async function searchProperties() {
       setLoad(true);
@@ -110,7 +129,7 @@ export default function HousesPage({ searchParams }) {
       setLoad(false);
     }
     searchProperties();
-  }, [requestToggle]);
+  }, [debouncedFilter]);
 
   const handlePageChange = (newPage) => {
     if (newPage >= 1 && newPage <= totalPages) {

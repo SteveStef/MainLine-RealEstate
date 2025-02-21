@@ -149,7 +149,7 @@ export default function MediaPage() {
                   </CardContent>
                   <CardFooter>
                     <Button variant="outline" className="w-full" onClick={()=>window.open(video.Link)}>
-                      Learn More <ExternalLink className="ml-2 h-4 w-4" />
+                      Watch on Youtube <ExternalLink className="ml-2 h-4 w-4" />
                     </Button>
                   </CardFooter>
                 </Card>
