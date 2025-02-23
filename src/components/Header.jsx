@@ -7,7 +7,7 @@ import prof from "../images/pickle.jpg";
 
 import { Crown, Home, ImageIcon, Info, Menu } from 'lucide-react';
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
 export default function Header() {
   const [isVisible, setIsVisible] = useState(true);
@@ -47,7 +47,7 @@ export default function Header() {
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="text-xl font-bold text-gray-800 flex items-center">
               <Crown className="h-7 w-7 mr-2" />
-              <span className="hidden sm:inline">Philadelphia Main Line Estate</span>
+              <span className="hidden sm:inline">The Main Line Realty</span>
               <span className="sm:hidden">PML Estate</span>
             </Link>
           </div>

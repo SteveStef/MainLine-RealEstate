@@ -61,7 +61,7 @@ export default function HousesPage({ searchParams }) {
   const [totalPages, setTotalPages] = useState(1);
 
   const [filters, setFilters] = useState({
-    location: searchParams?.location || "Villanova, PA",
+    location: searchParams?.location || "",
     status: searchParams?.status || "forSale",
     price_min: searchParams?.price_min || "",
     price_max: searchParams?.price_max || "",
@@ -103,10 +103,12 @@ export default function HousesPage({ searchParams }) {
         let url = `${process.env.NEXT_PUBLIC_API_URL}/getPropertyByCity`;
         const options = { method: "POST", headers: { "Content-Type": 'application/json' }, body: JSON.stringify(filters) };
         const data = await fetch(url, options);
+        console.log(data);
         if(data.ok) {
           const text = await data.text(); 
           const jsonRes = await JSON.parse(text);
-          if(jsonRes.results.error) {
+          console.log(jsonRes);
+          if(jsonRes.error || jsonRes.results.error) {
             setHouses([]);
             setTotalPages(1);
           } else if(jsonRes.results.length === 2 && jsonRes.results[1] === 200) {
@@ -117,9 +119,6 @@ export default function HousesPage({ searchParams }) {
             setHouses(jsonRes.results);
             setTotalPages(jsonRes.totalPages || 1); // Assuming the API returns totalPages
           }
-        } else {
-          setHouses([]);
-          setTotalPages(1);
         }
       } catch(err) {
         console.log(err);
@@ -165,7 +164,7 @@ export default function HousesPage({ searchParams }) {
                 <div className="flex justify-center items-center h-64">
                   <Loader2 className="h-8 w-8 animate-spin text-primary" />
                 </div>
-              ) : houses.length > 0 ? (
+              ) : !load && houses.length > 0 ? (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {houses.map((house) => (
@@ -190,15 +189,16 @@ export default function HousesPage({ searchParams }) {
                     </button>
                   </div>
                 </>
-              ) : (
+              ) : houses.length === 0 ? (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>No houses found</AlertTitle>
                   <AlertDescription>
-                    We couldn't find any houses matching your search criteria. Please try adjusting your filters.
+                    We could not find any houses matching your search criteria. Please try adjusting your filters.
                   </AlertDescription>
                 </Alert>
-              )}
+              ) : <></>
+              }
             </div>
           </div>
         </div>
