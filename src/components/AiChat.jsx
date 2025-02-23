@@ -154,7 +154,7 @@ export default function AIChatAssistant() {
       <CardHeader className="flex flex-row items-center justify-between flex-shrink-0">
         <CardTitle className="text-xl font-bold flex items-center">
           <MessageCircle className="h-6 w-6 mr-2" />
-          Chat with our Real Estate Assistant
+          Chat with our Main Line Assistant
         </CardTitle>
         <Button variant="ghost" size="icon" onClick={toggleFullScreen}>
           {isFullScreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
@@ -195,7 +195,7 @@ export default function AIChatAssistant() {
           <Input
             value={input}
             onChange={handleInputChange}
-            placeholder="e.g. Two bedroom house in Villanova PA."
+            placeholder="e.g. Homes under 800k in Ardmore."
             className="flex-grow"
             disabled={isLoading}
             autoFocus

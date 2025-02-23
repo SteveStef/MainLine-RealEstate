@@ -34,7 +34,7 @@ export function HouseCard({ house }) {
             ${house.price.toLocaleString()}
           </p>
           <div className="flex flex-wrap gap-2 mb-2">
-            <Badge variant="secondary">{house.homeType}</Badge>
+            <Badge variant="secondary">{prettyString(house.homeType)}</Badge>
             <Badge variant="outline">
               {house.homeStatus.replaceAll('_', ' ')}
             </Badge>
@@ -73,3 +73,12 @@ export function HouseCard({ house }) {
     </motion.div>
   )
 }
+
+function prettyString(s) {
+  if (!s) return ""; // Handle empty string case
+  let words = s.split("_").filter(word => word.length > 0); // Remove empty words caused by consecutive underscores
+  return words
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()) // Capitalize first letter
+    .join(" "); // Join words with space
+}
+

@@ -95,19 +95,22 @@ export default function HousesPage({ searchParams }) {
   });
 
   const debouncedFilter = useDebounce(filters, 500);
+  const lastLocationRef = useRef(filters.location); // Store last location value
 
   useEffect(() => {
+    if (!requestToggle && lastLocationRef.current !== debouncedFilter.location) {
+      lastLocationRef.current = debouncedFilter.location;
+      return;
+    }
     async function searchProperties() {
       setLoad(true);
       try {
         let url = `${process.env.NEXT_PUBLIC_API_URL}/getPropertyByCity`;
         const options = { method: "POST", headers: { "Content-Type": 'application/json' }, body: JSON.stringify(filters) };
         const data = await fetch(url, options);
-        console.log(data);
         if(data.ok) {
           const text = await data.text(); 
           const jsonRes = await JSON.parse(text);
-          console.log(jsonRes);
           if(jsonRes.error || jsonRes.results.error) {
             setHouses([]);
             setTotalPages(1);
@@ -128,6 +131,7 @@ export default function HousesPage({ searchParams }) {
       setLoad(false);
     }
     searchProperties();
+    setRequestToggle(false); // able to search again 
   }, [debouncedFilter]);
 
   const handlePageChange = (newPage) => {
@@ -136,7 +140,6 @@ export default function HousesPage({ searchParams }) {
         ...prevFilters,
         page: newPage.toString()
       }));
-      setRequestToggle(!requestToggle);
     }
   };
 

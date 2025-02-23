@@ -42,15 +42,10 @@ export function SearchAndFilterBar({ StandaloneSearchBox, filters, setFilters, r
 
   const handleFilterChange = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
-
-    if (key !== "location") {
-      setRequestToggle(!requestToggle);
-    }
-
   };
 
   const handleSearch = () => {
-    setRequestToggle(!requestToggle);
+    setRequestToggle(true);
   };
 
   useEffect(() => {
@@ -73,7 +68,6 @@ export function SearchAndFilterBar({ StandaloneSearchBox, filters, setFilters, r
             const places = searchBoxRef.current.getPlaces();
             if (places && places.length > 0) {
               const location = places[0].formatted_address;
-              console.log(location)
               updateQueryParam("location", location);
               handleFilterChange('location', location);
               handleSearch();

@@ -497,6 +497,7 @@ function TaxHistory({ history }) {
 }
 
 function NearbyHomes({ homes }) {
+  console.log(homes)
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-8">
       <h2 className="text-2xl font-bold mb-4 text-black font-sans">Nearby Homes</h2>
@@ -505,6 +506,7 @@ function NearbyHomes({ homes }) {
       ) : (
         <ul className="space-y-4">
           {homes.slice(0,3).map((home, index) => (
+        <Link href={`/properties/${home.address.streetAddress+","+home.address.city+" "+home.address.state}`}>
             <li key={index} className="flex items-center space-x-4 bg-gray-50 p-3 rounded-lg">
               {home.miniCardPhotos && home.miniCardPhotos.length > 0 && (
                 <Image
@@ -521,6 +523,7 @@ function NearbyHomes({ homes }) {
                 <p className="text-sm font-semibold text-black">${(home.price || "").toLocaleString()}</p>
               </div>
             </li>
+        </Link>
           ))}
         </ul>
       )}

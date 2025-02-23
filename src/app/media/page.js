@@ -1,45 +1,45 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { BookOpen, Youtube, ChevronRight, ExternalLink, ArrowLeft, ArrowRight } from 'lucide-react'
-import Header from "@/components/Header.jsx";
+import { BookOpen, Youtube, ChevronRight, ExternalLink, ArrowLeft, ArrowRight } from "lucide-react"
+import Header from "@/components/Header.jsx"
 
 export default function MediaPage() {
-  const [blogPage, setBlogPage] = useState(0);
-  const [videoPage, setVideoPage] = useState(0);
-  const [blogs, setBlogs] = useState([]);
-  const [videos, setVideos] = useState([]);
+  const [blogPage, setBlogPage] = useState(0)
+  const [videoPage, setVideoPage] = useState(0)
+  const [blogs, setBlogs] = useState([])
+  const [videos, setVideos] = useState([])
 
-  const blogsPerPage = 6;
-  const videosPerPage = 6;
+  const blogsPerPage = 6
+  const videosPerPage = 6
 
-  const displayedBlogs = blogs.slice(blogPage * blogsPerPage, (blogPage + 1) * blogsPerPage);
-  const displayedVideos = videos.slice(videoPage * videosPerPage, (videoPage + 1) * videosPerPage);
+  const displayedBlogs = blogs.slice(blogPage * blogsPerPage, (blogPage + 1) * blogsPerPage)
+  const displayedVideos = videos.slice(videoPage * videosPerPage, (videoPage + 1) * videosPerPage)
 
   useEffect(() => {
     async function getMedia() {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/getMedia`, {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-        });
-        if(response.ok) {
-          const mediaList = JSON.parse(await response.text());
-          setBlogs(mediaList.blogs || []);
-          setVideos(mediaList.videos || []);
+        })
+        if (response.ok) {
+          const mediaList = JSON.parse(await response.text())
+          setBlogs(mediaList.blogs || [])
+          setVideos(mediaList.videos || [])
         }
       } catch (error) {
-        console.error('An error occurred:', error);
-        setBlogs([]);
-        setVideos([]);
+        console.error("An error occurred:", error)
+        setBlogs([])
+        setVideos([])
       }
     }
-    getMedia();
-  },[]);
+    getMedia()
+  }, [])
 
   return (
     <>
@@ -55,7 +55,7 @@ export default function MediaPage() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => setBlogPage(prev => Math.max(0, prev - 1))}
+                onClick={() => setBlogPage((prev) => Math.max(0, prev - 1))}
                 disabled={blogPage === 0}
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -63,7 +63,7 @@ export default function MediaPage() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => setBlogPage(prev => Math.min(Math.floor((blogs.length - 1) / blogsPerPage), prev + 1))}
+                onClick={() => setBlogPage((prev) => Math.min(Math.floor((blogs.length - 1) / blogsPerPage), prev + 1))}
                 disabled={(blogPage + 1) * blogsPerPage >= blogs.length}
               >
                 <ArrowRight className="h-4 w-4" />
@@ -77,8 +77,8 @@ export default function MediaPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {displayedBlogs.map((blog) => (
-                <Card 
-                  key={blog.VideoId} 
+                <Card
+                  key={blog.VideoId}
                   className="flex flex-col transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1"
                 >
                   <CardHeader>
@@ -88,7 +88,7 @@ export default function MediaPage() {
                     <p className="text-muted-foreground">{blog.Description}</p>
                   </CardContent>
                   <CardFooter>
-                    <Button variant="outline" className="w-full" onClick={()=>window.open(blog.Link, '_blank')}>
+                    <Button variant="outline" className="w-full" onClick={() => window.open(blog.Link, "_blank")}>
                       View More <ChevronRight className="ml-2 h-4 w-4" />
                     </Button>
                   </CardFooter>
@@ -97,7 +97,7 @@ export default function MediaPage() {
             </div>
           )}
         </section>
-        
+
         <section>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-semibold flex items-center">
@@ -108,7 +108,7 @@ export default function MediaPage() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => setVideoPage(prev => Math.max(0, prev - 1))}
+                onClick={() => setVideoPage((prev) => Math.max(0, prev - 1))}
                 disabled={videoPage === 0}
               >
                 <ArrowLeft className="h-4 w-4" />
@@ -116,7 +116,9 @@ export default function MediaPage() {
               <Button
                 variant="outline"
                 size="icon"
-                onClick={() => setVideoPage(prev => Math.min(Math.floor((videos.length - 1) / videosPerPage), prev + 1))}
+                onClick={() =>
+                  setVideoPage((prev) => Math.min(Math.floor((videos.length - 1) / videosPerPage), prev + 1))
+                }
                 disabled={(videoPage + 1) * videosPerPage >= videos.length}
               >
                 <ArrowRight className="h-4 w-4" />
@@ -130,25 +132,25 @@ export default function MediaPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {displayedVideos.map((video) => (
-                <Card 
-                  key={video.VideoId} 
+                <Card
+                  key={video.VideoId}
                   className="flex flex-col transition-all duration-300 ease-in-out hover:shadow-lg hover:-translate-y-1"
                 >
                   <CardHeader>
                     <CardTitle className="text-lg">{video.Title}</CardTitle>
                   </CardHeader>
                   <CardContent className="flex-grow">
-                    <div className="aspect-w-16 aspect-h-9 mb-4">
+                    <div className="relative w-full" style={{ paddingTop: "55%" }}>
                       <iframe
                         src={`https://www.youtube.com/embed/${video.VideoId}`}
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
-                        className="w-full h-full rounded-md"
+                        className="absolute top-0 left-0 w-full h-full rounded-md"
                       ></iframe>
                     </div>
                   </CardContent>
                   <CardFooter>
-                    <Button variant="outline" className="w-full" onClick={()=>window.open(video.Link)}>
+                    <Button variant="outline" className="w-full" onClick={() => window.open(video.Link)}>
                       Watch on Youtube <ExternalLink className="ml-2 h-4 w-4" />
                     </Button>
                   </CardFooter>
