@@ -51,6 +51,8 @@ export default function HousesPage({ searchParams }) {
   const onUnmount = React.useCallback(function callback(map) {
   }, [])
 
+  const isMobile = useIsMobile();
+
   const [houses, setHouses] = useState([]);
   const [requestToggle, setRequestToggle] = useState(false);
   const [hoveredHouse, setHoveredHouse] = useState(null);
@@ -169,9 +171,9 @@ export default function HousesPage({ searchParams }) {
                 </div>
               ) : !load && houses.length > 0 ? (
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {houses.map((house) => (
-                      <div key={house.id}><HouseCard house={house} /></div>
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {houses.map((house, idx) => (
+                      <div key={idx}><HouseCard house={house} /></div>
                     ))}
                   </div>
                   <div className="mt-6 flex justify-center items-center space-x-4">
@@ -205,6 +207,8 @@ export default function HousesPage({ searchParams }) {
             </div>
           </div>
         </div>
+        {
+          !isMobile && 
         <div className="w-1/2 h-screen">
           {isLoaded && (
             <GoogleMap
@@ -305,8 +309,26 @@ export default function HousesPage({ searchParams }) {
             </GoogleMap>
           )}
         </div>
+        }
       </div>
     </>
   )
 }
 
+const useIsMobile = (breakpoint = 768) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < breakpoint);
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, [breakpoint]);
+
+  return isMobile;
+};

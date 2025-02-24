@@ -34,7 +34,6 @@ export default function AIChatAssistant() {
 
     return () => window.removeEventListener('resize', handleResize);
   },[]);
-  console.log(isMobile);
 
   const handleInputChange = (e) => {
     setInput(e.target.value);

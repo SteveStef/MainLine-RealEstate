@@ -48,7 +48,7 @@ export default function Header() {
             <Link href="/" className="text-xl font-bold text-gray-800 flex items-center">
               <Crown className="h-7 w-7 mr-2" />
               <span className="hidden sm:inline">Main Line Realty</span>
-              <span className="sm:hidden">PML Estate</span>
+              <span className="sm:hidden">Main Line Realty</span>
             </Link>
           </div>
           <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
