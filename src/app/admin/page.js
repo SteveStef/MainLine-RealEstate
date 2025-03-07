@@ -96,7 +96,6 @@ function EditListingForm({ password }) {
     }
 
     try {
-      console.log(password);
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/updateFeaturedListings?listing=${idx}&address=${address}`, {
         method: 'GET',
         headers: {

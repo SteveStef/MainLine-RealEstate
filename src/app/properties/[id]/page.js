@@ -497,7 +497,6 @@ function TaxHistory({ history }) {
 }
 
 function NearbyHomes({ homes }) {
-  console.log(homes)
   return (
     <div className="bg-white rounded-lg shadow-md p-6 mb-8">
       <h2 className="text-2xl font-bold mb-4 text-black font-sans">Nearby Homes</h2>
