@@ -104,9 +104,11 @@ export default function Header() {
               </div>
             </div>
             <div className="mt-3 space-y-1">
+              <Link href="/about">
               <Button variant="default" className="w-full justify-start">
                 Need an Agent?
               </Button>
+              </Link>
             </div>
           </div>
         </div>
