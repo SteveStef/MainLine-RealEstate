@@ -3,11 +3,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { MapPin, Phone, ArrowRightCircle, ArrowLeftCircle, Search, Newspaper, DollarSign, Bed, Bath, ArrowRight, Mail, Clock, Eye, Home, Users, Award, Info } from 'lucide-react';
-import { AnimatePresence, motion } from "framer-motion";
+import { useAnimation, AnimatePresence, motion, useInView } from "framer-motion";
 import { ImageSlideshow } from "../components/ImageSlideShow";
 import Image from "next/image";
 import YouTube from "react-youtube";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import Link from "next/link";
@@ -55,6 +55,17 @@ export default function LandingPage() {
     getFeatured();
   },[]);
 
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  },[]);
 
   const mainLineAreas = [
     { name: "Bryn Mawr", image: Brynmar },
@@ -233,37 +244,125 @@ function FeaturedProperties({ properties }) {
   )
 }
 
-function WhyChooseUs() {
+export function WhyChooseUs() {
+  const sectionRef = useRef(null)
+  const isInView = useInView(sectionRef, { once: true, margin: "-100px" })
+
   const reasons = [
-    { icon: <Home className="h-10 w-10 text-primary" />, title: "Extensive Property Portfolio", description: "Access to a wide range of properties across the Main Line area." },
-    { icon: <Users className="h-10 w-10 text-primary" />, title: "Expert Local Knowledge", description: "Our team has in-depth knowledge of the Main Line real estate market." },
-    { icon: <Award className="h-10 w-10 text-primary" />, title: "Award-Winning Service", description: "Recognized for our exceptional customer service and results." },
-  ];
+    {
+      icon: <Home className="h-12 w-12 text-primary" />,
+      title: "Extensive Property Portfolio",
+      description: "Access to a wide range of properties across the Main Line area.",
+    },
+    {
+      icon: <Users className="h-12 w-12 text-primary" />,
+      title: "Expert Local Knowledge",
+      description: "Our team has in-depth knowledge of the Main Line real estate market.",
+    },
+    {
+      icon: <Award className="h-12 w-12 text-primary" />,
+      title: "Award-Winning Service",
+      description: "Recognized for our exceptional customer service and results.",
+    },
+  ]
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+        delayChildren: 0.3,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 12,
+      },
+    },
+  }
+
+  const titleVariants = {
+    hidden: { opacity: 0, scale: 0.9 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
+  }
 
   return (
-    <section className="w-full py-12 px-4 md:px-6 bg-background">
+    <section
+      ref={sectionRef}
+      className="w-full py-16 md:py-24 px-4 md:px-6 bg-gradient-to-b from-background to-muted/30"
+    >
       <div className="container mx-auto">
-        <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-center mb-8">Why Choose Main Line Realty</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <motion.div
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          variants={titleVariants}
+          className="text-center mb-16"
+        >
+          <div className="inline-block mb-3 px-4 py-1 rounded-full bg-primary/10 text-primary text-sm font-medium">
+            Why Choose Us
+          </div>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">Why Choose Main Line Realty</h2>
+          <div className="mt-4 mx-auto max-w-2xl">
+            <p className="text-muted-foreground">
+              We combine local expertise with exceptional service to deliver the best real estate experience.
+            </p>
+          </div>
+        </motion.div>
+
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate={isInView ? "visible" : "hidden"}
+          className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12"
+        >
           {reasons.map((reason, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
+              variants={itemVariants}
+              whileHover={{
+                y: -10,
+                transition: { type: "spring", stiffness: 400, damping: 10 },
+              }}
+              className="h-full"
             >
-              <Card className="h-full transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                <CardHeader>
-                  <div className="mb-4 flex justify-center">{reason.icon}</div>
-                  <CardTitle className="text-xl font-semibold text-center">{reason.title}</CardTitle>
+              <Card className="h-full border-none shadow-lg bg-card/50 backdrop-blur-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <div className="absolute -right-10 -top-10 w-40 h-40 rounded-full bg-primary/5 group-hover:bg-primary/10 transition-colors duration-500" />
+
+                <CardHeader className="relative z-10">
+                  <div className="mb-5 flex justify-center">
+                    <motion.div
+                      whileHover={{ rotate: [0, -10, 10, -5, 5, 0], transition: { duration: 0.5 } }}
+                      className="p-4 rounded-full bg-primary/10 text-primary"
+                    >
+                      {reason.icon}
+                    </motion.div>
+                  </div>
+                  <CardTitle className="text-xl font-bold text-center">{reason.title}</CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="relative z-10">
                   <p className="text-muted-foreground text-center">{reason.description}</p>
                 </CardContent>
               </Card>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )
@@ -272,13 +371,21 @@ function WhyChooseUs() {
 export function ExploreAreas({ mainLineAreas }) {
   const [currentPage, setCurrentPage] = useState(0)
   const [direction, setDirection] = useState(0)
+  const [isHovering, setIsHovering] = useState(null)
   const areasPerPage = 6
   const totalPages = Math.ceil(mainLineAreas.length / areasPerPage)
-  
-  const currentAreas = mainLineAreas.slice(
-    currentPage * areasPerPage,
-    (currentPage + 1) * areasPerPage
-  )
+
+  const currentAreas = mainLineAreas.slice(currentPage * areasPerPage, (currentPage + 1) * areasPerPage)
+
+  const sectionRef = useRef(null)
+  const isInView = useInView(sectionRef, { once: false, amount: 0.2 })
+  const controls = useAnimation()
+
+  useEffect(() => {
+    if (isInView) {
+      controls.start("visible")
+    }
+  }, [isInView, controls])
 
   const handleNextPage = () => {
     setDirection(1)
@@ -290,36 +397,109 @@ export function ExploreAreas({ mainLineAreas }) {
     setCurrentPage((prev) => (prev - 1 + totalPages) % totalPages)
   }
 
-  const variants = {
+  const handlePageClick = (pageIndex) => {
+    setDirection(pageIndex > currentPage ? 1 : -1)
+    setCurrentPage(pageIndex)
+  }
+
+  // Enhanced variants with more sophisticated animations
+  const pageVariants = {
     enter: (direction) => ({
       x: direction > 0 ? 1000 : -1000,
-      opacity: 0
+      opacity: 0,
+      scale: 0.95,
     }),
     center: {
       zIndex: 1,
       x: 0,
-      opacity: 1
+      opacity: 1,
+      scale: 1,
     },
     exit: (direction) => ({
       zIndex: 0,
       x: direction < 0 ? 1000 : -1000,
-      opacity: 0
-    })
+      opacity: 0,
+      scale: 0.95,
+    }),
+  }
+
+  const pageTransition = {
+    x: { type: "spring", stiffness: 300, damping: 30 },
+    opacity: { duration: 0.4 },
+    scale: { type: "spring", stiffness: 400, damping: 30 },
+  }
+
+  // Section animation variants
+  const sectionVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.6,
+        ease: "easeOut",
+      },
+    },
+  }
+
+  // Background pattern animation
+  const patternVariants = {
+    initial: {
+      backgroundPosition: "0% 0%",
+    },
+    animate: {
+      backgroundPosition: "100% 100%",
+      transition: {
+        duration: 20,
+        ease: "linear",
+        repeat: Number.POSITIVE_INFINITY,
+        repeatType: "reverse",
+      },
+    },
   }
 
   return (
-    <section id="areas" className="w-full py-12 px-4 md:px-6 bg-gray-50">
-      <div className="container px-4 md:px-6 mx-auto">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">
+    <motion.section
+      id="areas"
+      ref={sectionRef}
+      className="w-full py-16 px-4 md:px-6 relative overflow-hidden"
+      variants={sectionVariants}
+      initial="hidden"
+      animate={controls}
+    >
+      {/* Animated background pattern */}
+      <motion.div
+        className="absolute inset-0 opacity-5 pointer-events-none"
+        style={{
+          backgroundImage: "radial-gradient(circle, primary 1px, transparent 1px)",
+          backgroundSize: "30px 30px",
+        }}
+        variants={patternVariants}
+        initial="initial"
+        animate="animate"
+      />
+
+      <div className="container px-4 md:px-6 mx-auto relative z-10">
+        <motion.div
+          className="flex flex-col md:flex-row md:items-center justify-between mb-12"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+        >
+          <motion.h2
+            className="text-3xl font-bold tracking-tighter sm:text-5xl mb-4 md:mb-0 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70"
+            initial={{ opacity: 0, x: -30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+          >
             Explore Main Line Areas
-          </h2>
+          </motion.h2>
           <div className="flex space-x-4">
             <Button
               onClick={handlePrevPage}
               variant="outline"
               size="icon"
-              className="rounded-full transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground"
+              className="rounded-full transition-all duration-500 hover:scale-110 hover:bg-primary hover:text-primary-foreground shadow-sm hover:shadow-md"
             >
               <ArrowLeftCircle className="h-6 w-6" />
               <span className="sr-only">View previous areas</span>
@@ -328,103 +508,182 @@ export function ExploreAreas({ mainLineAreas }) {
               onClick={handleNextPage}
               variant="outline"
               size="icon"
-              className="rounded-full transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground"
+              className="rounded-full transition-all duration-500 hover:scale-110 hover:bg-primary hover:text-primary-foreground shadow-sm hover:shadow-md"
             >
               <ArrowRightCircle className="h-6 w-6" />
               <span className="sr-only">View next areas</span>
             </Button>
           </div>
-        </div>
-        
-        <AnimatePresence mode="wait" custom={direction}>
-          <motion.div
-            key={currentPage}
-            custom={direction}
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{
-              x: { type: "spring", stiffness: 300, damping: 30 },
-              opacity: { duration: 0.2 }
-            }}
-          >
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {currentAreas.map((area, index) => (
-                <motion.div
-                  key={area.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ 
-                    opacity: 1, 
-                    y: 0,
-                    transition: { delay: index * 0.1 } 
-                  }}
-                  className="relative overflow-hidden rounded-lg shadow-md group"
-                >
-                  <div className="aspect-w-16 aspect-h-12">
-                    <Image
-                      src={area.image}
-                      alt={`${area.name} area`}
-                      width={400}
-                      height={300}
-                      className="object-cover w-full h-48 transition-transform duration-500 group-hover:scale-110"
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black to-transparent opacity-70 group-hover:opacity-90 transition-opacity duration-500" />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4">
-                    <h3 className="text-white text-xl font-bold mb-2 transform transition-transform duration-300 group-hover:-translate-y-1">
-                      {area.name}
-                    </h3>
-                    <Link href={`places/${area.name}`}>
-                      <Button 
-                        variant="secondary" 
-                        size="sm" 
-                        className="opacity-0 transform translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300"
+        </motion.div>
+
+        <div className="relative overflow-hidden">
+          <AnimatePresence mode="wait" custom={direction} initial={false}>
+            <motion.div
+              key={currentPage}
+              custom={direction}
+              variants={pageVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={pageTransition}
+              className="w-full"
+            >
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+                {currentAreas.map((area, index) => (
+                  <motion.div
+                    key={area.name}
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{
+                      opacity: 1,
+                      y: 0,
+                      transition: {
+                        delay: index * 0.1,
+                        duration: 0.5,
+                        ease: [0.25, 0.1, 0.25, 1.0],
+                      },
+                    }}
+                    whileHover={{ y: -10 }}
+                    onHoverStart={() => setIsHovering(index)}
+                    onHoverEnd={() => setIsHovering(null)}
+                    className="relative overflow-hidden rounded-xl shadow-lg group"
+                    style={{
+                      transformStyle: "preserve-3d",
+                      perspective: "1000px",
+                    }}
+                  >
+                    <div className="aspect-w-16 aspect-h-12 overflow-hidden">
+                      <motion.div
+                        whileHover={{ scale: 1.15 }}
+                        transition={{ duration: 0.7, ease: [0.25, 0.1, 0.25, 1.0] }}
+                        className="w-full h-full"
                       >
-                        Learn More
-                      </Button>
-                    </Link>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </AnimatePresence>
-        
-        <div className="mt-6 flex justify-center items-center space-x-2">
-          <Button
-            onClick={handlePrevPage}
-            variant="outline"
-            size="sm"
-            className="rounded-full transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground"
-          >
-            <ArrowLeftCircle className="h-4 w-4 mr-2" />
-            Previous
-          </Button>
-          <div className="flex gap-2">
+                        <Image
+                          src={area.image || "/placeholder.svg"}
+                          alt={`${area.name} area`}
+                          width={400}
+                          height={300}
+                          className="object-cover w-full h-64 transition-all duration-700"
+                        />
+                      </motion.div>
+                    </div>
+
+                    {/* Gradient overlay with enhanced animation */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"
+                      initial={{ opacity: 0.6 }}
+                      whileHover={{ opacity: 0.85 }}
+                      transition={{ duration: 0.5 }}
+                    />
+
+                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                      <motion.h3
+                        className="text-white text-2xl font-bold mb-3"
+                        initial={{ y: 0 }}
+                        whileHover={{ y: -8 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
+                      >
+                        {area.name}
+                      </motion.h3>
+
+                      <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={isHovering === index ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                        transition={{ duration: 0.4, ease: "easeOut" }}
+                      >
+                        <Link href={`places/${area.name}`}>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="font-medium shadow-lg hover:shadow-xl transition-all duration-500 hover:scale-105"
+                          >
+                            Discover
+                          </Button>
+                        </Link>
+                      </motion.div>
+                    </div>
+
+                    {/* Decorative corner accents */}
+                    <motion.div
+                      className="absolute top-0 left-0 w-10 h-10 border-t-2 border-l-2 border-white/30 rounded-tl-lg"
+                      initial={{ opacity: 0, scale: 0 }}
+                      whileHover={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                    />
+                    <motion.div
+                      className="absolute bottom-0 right-0 w-10 h-10 border-b-2 border-r-2 border-white/30 rounded-br-lg"
+                      initial={{ opacity: 0, scale: 0 }}
+                      whileHover={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+
+        <motion.div
+          className="mt-10 flex flex-col items-center space-y-4"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+        >
+          {/* Enhanced pagination indicators */}
+          <div className="flex gap-3 items-center justify-center">
             {[...Array(totalPages)].map((_, i) => (
-              <div
+              <motion.button
                 key={i}
-                className={`h-2 w-2 rounded-full transition-all duration-300 ${
-                  i === currentPage 
-                    ? 'bg-primary w-4' 
-                    : 'bg-gray-300 hover:bg-gray-400'
-                }`}
-              />
+                onClick={() => handlePageClick(i)}
+                className="relative focus:outline-none"
+                whileHover={{ scale: 1.2 }}
+                whileTap={{ scale: 0.9 }}
+              >
+                <motion.div
+                  className={`h-2.5 rounded-full transition-all duration-500 ${
+                    i === currentPage ? "bg-primary shadow-md shadow-primary/30" : "bg-gray-300"
+                  }`}
+                  initial={{ width: i === currentPage ? 20 : 10 }}
+                  animate={{
+                    width: i === currentPage ? 20 : 10,
+                    backgroundColor: i === currentPage ? "var(--primary)" : "var(--gray-300)",
+                  }}
+                  transition={{ duration: 0.3 }}
+                />
+                {i === currentPage && (
+                  <motion.div
+                    className="absolute inset-0 rounded-full bg-primary/30"
+                    initial={{ scale: 1 }}
+                    animate={{ scale: 1.5, opacity: 0 }}
+                    transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+                  />
+                )}
+              </motion.button>
             ))}
           </div>
-          <Button
-            onClick={handleNextPage}
-            variant="outline"
-            size="sm"
-            className="rounded-full transition-all duration-300 hover:scale-110 hover:bg-primary hover:text-primary-foreground"
-          >
-            Next
-            <ArrowRightCircle className="h-4 w-4 ml-2" />
-          </Button>
-        </div>
+
+          <div className="flex gap-4 mt-2">
+            <Button
+              onClick={handlePrevPage}
+              variant="outline"
+              size="sm"
+              className="rounded-full transition-all duration-300 hover:translate-x-[-5px] hover:bg-primary hover:text-primary-foreground group"
+            >
+              <ArrowLeftCircle className="h-4 w-4 mr-2 transition-transform duration-300 group-hover:scale-125" />
+              Previous
+            </Button>
+            <Button
+              onClick={handleNextPage}
+              variant="outline"
+              size="sm"
+              className="rounded-full transition-all duration-300 hover:translate-x-[5px] hover:bg-primary hover:text-primary-foreground group"
+            >
+              Next
+              <ArrowRightCircle className="h-4 w-4 ml-2 transition-transform duration-300 group-hover:scale-125" />
+            </Button>
+          </div>
+        </motion.div>
       </div>
-    </section>
+    </motion.section>
   )
 }
 

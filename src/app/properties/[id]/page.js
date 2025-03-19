@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { X,
+ ChevronLeft, ChevronRight,
   DollarSign, Circle, HomeIcon, User, Mail, Phone, Send, Bed, Bath, Ruler, Calendar, Home, TreesIcon as Tree, Car, MapPin, Calculator, Warehouse, Thermometer, Wind, Droplet, Zap, Trees, Building, School, ParkingCircle, Key, HardHat, Hammer, Lightbulb, Footprints,Leaf,Mountain, Eye,Wifi,Trash2, Fence,Info } from 'lucide-react';
 import Link from "next/link";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -71,8 +72,8 @@ export default function HouseDetails(props) {
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-4xl font-bold mb-6 text-gray-800">{address}</h1>
           {
-            houseData.photos?.length > 0 &&
-          <ImageCollage images={houseData.photos} />
+            houseData.originalPhotos?.length > 0 &&
+          <ImageCollage images={houseData.originalPhotos} />
           }
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
             <div className="lg:col-span-2">
@@ -103,35 +104,54 @@ export default function HouseDetails(props) {
 
 function ImageCollage({ images }) {
   const [showAll, setShowAll] = useState(false)
+  const [fullScreenIndex, setFullScreenIndex] = useState(null)
   const len = images[0].mixedSources.jpeg.length - 1
+
+  const openFullScreen = (index) => {
+    setFullScreenIndex(index)
+  }
+
+  const closeFullScreen = () => {
+    setFullScreenIndex(null)
+  }
+
+  const navigateImage = (direction) => {
+    if (direction === "next") {
+      setFullScreenIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))
+    } else {
+      setFullScreenIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))
+    }
+  }
 
   return (
     <div className="relative">
       <div className="flex flex-col sm:flex-row gap-2">
         <div className="w-full sm:w-1/2">
-          <Image 
-            src={images[0].mixedSources.jpeg[len].url} 
-            alt="Main property image" 
-            width={800} 
-            height={600} 
-            className="w-full h-[200px] sm:h-[400px] object-cover rounded-lg"
+          <Image
+            src={images[0].mixedSources.jpeg[len].url || "/placeholder.svg"}
+            alt="Main property image"
+            width={800}
+            height={600}
+            className="w-full h-[200px] sm:h-[400px] object-cover rounded-lg cursor-pointer"
+            onClick={() => openFullScreen(0)}
           />
         </div>
         <div className="w-full sm:w-1/2 grid grid-cols-2 gap-2 mt-2 sm:mt-0">
           {images.slice(1, 5).map((img, index) => (
-            <Image 
-              key={index} 
-              src={img.mixedSources.jpeg[len].url} 
-              alt={`Property image ${index + 2}`} 
-              width={400} 
-              height={300} 
-              className="w-full h-[100px] sm:h-[196px] object-cover rounded-lg"
+            <Image
+              key={index}
+              src={img.mixedSources.jpeg[len].url || "/placeholder.svg"}
+              alt={`Property image ${index + 2}`}
+              width={400}
+              height={300}
+              className="w-full h-[100px] sm:h-[196px] object-cover rounded-lg cursor-pointer"
+              onClick={() => openFullScreen(index + 1)}
             />
           ))}
         </div>
       </div>
       {!showAll && (
-        <button 
+        <button
           onClick={() => setShowAll(true)}
           className="absolute bottom-4 right-4 bg-white text-gray-800 px-4 py-2 rounded-lg shadow-md hover:bg-gray-100 transition-colors text-sm sm:text-base"
         >
@@ -140,7 +160,7 @@ function ImageCollage({ images }) {
       )}
       {showAll && (
         <div className="fixed inset-0 bg-black bg-opacity-90 z-50 overflow-auto p-4">
-          <button 
+          <button
             onClick={() => setShowAll(false)}
             className="absolute top-4 right-4 text-white p-2"
             aria-label="Close gallery"
@@ -149,16 +169,59 @@ function ImageCollage({ images }) {
           </button>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-12">
             {images.map((img, index) => (
-              <Image 
-                key={index} 
-                src={img.mixedSources.jpeg[len].url} 
-                alt={`Property image ${index + 1}`} 
-                width={600} 
-                height={400} 
-                className="w-full h-auto object-cover rounded-lg"
+              <Image
+                key={index}
+                src={img.mixedSources.jpeg[len].url || "/placeholder.svg"}
+                alt={`Property image ${index + 1}`}
+                width={600}
+                height={400}
+                className="w-full h-auto object-cover rounded-lg cursor-pointer"
+                onClick={() => openFullScreen(index)}
               />
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Full Screen Image View */}
+      {fullScreenIndex !== null && (
+        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
+          <button
+            onClick={closeFullScreen}
+            className="absolute top-4 right-4 text-white p-2 z-10"
+            aria-label="Close full screen view"
+          >
+            <X size={24} />
+          </button>
+
+          <button
+            onClick={() => navigateImage("prev")}
+            className="absolute left-4 text-white p-2 rounded-full bg-black/30 hover:bg-black/50 transition-colors z-10"
+            aria-label="Previous image"
+          >
+            <ChevronLeft size={24} />
+          </button>
+
+          <div className="relative w-full h-full max-w-5xl max-h-[90vh] flex items-center justify-center p-4">
+            <Image
+              src={images[fullScreenIndex].mixedSources.jpeg[len].url || "/placeholder.svg"}
+              alt={`Property image ${fullScreenIndex + 1}`}
+              width={1200}
+              height={800}
+              className="max-w-full max-h-full object-contain"
+            />
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-white bg-black/50 px-3 py-1 rounded-full text-sm">
+              {fullScreenIndex + 1} / {images.length}
+            </div>
+          </div>
+
+          <button
+            onClick={() => navigateImage("next")}
+            className="absolute right-4 text-white p-2 rounded-full bg-black/30 hover:bg-black/50 transition-colors z-10"
+            aria-label="Next image"
+          >
+            <ChevronRight size={24} />
+          </button>
         </div>
       )}
     </div>
