@@ -1068,15 +1068,15 @@ function ContactSection() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-gray-600">Main Line Reality</p>
+                <p className="text-gray-600">Main Line Realty</p>
                 <p className="text-gray-600">216 E Lancaster Ave, Wayne, PA 19087</p>
                 <p className="text-gray-600 mt-4 flex items-center">
                   <Phone className="h-4 w-4 mr-2 text-primary" />
-                  (610) 947-0408
+                  (610) 781-7003
                 </p>
                 <p className="text-gray-600 flex items-center">
                   <Mail className="h-4 w-4 mr-2 text-primary" />
-                  peterstefanatos@compass.com
+                  peter.stefanatos@compass.com
                 </p>
                 <p className="text-gray-600 mt-4 flex items-center">
                   <Clock className="h-4 w-4 mr-2 text-primary" />

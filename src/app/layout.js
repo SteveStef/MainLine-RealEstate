@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
           <main className="flex-grow">
             {children}
           </main>
- <footer className="bg-gray-100 border-t border-gray-200 py-12">
+    <footer className="bg-gray-100 border-t border-gray-200 py-12">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Company Info */}
@@ -101,11 +101,11 @@ export default function RootLayout({ children }) {
               </div>
               <div className="flex items-center">
                 <Phone className="mr-2 h-5 w-5 text-gray-600" />
-                <span className="text-gray-600">(610) 947-0408</span>
+                <span className="text-gray-600">(610) 781-7003</span>
               </div>
               <div className="flex items-center">
                 <Mail className="mr-2 h-5 w-5 text-gray-600" />
-                <span className="text-gray-600">peterstefanatos@compass.com</span>
+                <span className="text-gray-600">peter.stefanatos@compass.com</span>
               </div>
             </div>
           </div>
