@@ -155,7 +155,7 @@ export default function AboutMe() {
                   <div className="space-y-2">
                     <p className="flex items-center">
                       <Phone className="mr-2 h-5 w-5 text-gray-600" />
-                      (610) 761-7003
+                      (610) 781-7003
                     </p>
                     <p className="flex items-center">
                       <Mail className="mr-2 h-5 w-5 text-gray-600" />
